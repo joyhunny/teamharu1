@@ -1,0 +1,134 @@
+# 파일명 예: codex-runbook.yaml
+meta:
+  project: teamharu-mvp
+  source_of_truth: "./11. sprint, Task (요일별).md"   # DoD/산출물 기준  (근거 문서) 
+  references:
+    - "./5.1.PRD(MVP).md"          # 제품 범위·수락기준 (Aha! 브리핑) 
+    - "./6.1 MVP Spring Backlog.md" # Epic/Story/AC 맵 
+    - "./10. TRD.md"               # 아키텍처·NFR(성능/보안/관측성) 
+    - "./4. MRD.md"                # 시장 문제·가설·페르소나
+    - "./1.1.비전과 전략(서비스정의서).md"
+    - "./7.2 사용자 여정 항목 정의.md"
+    - "./9. 랜딩페이지 설계.md"
+    - "./8.1 디자인 가이드라인(gpt).md"
+defaults:
+  branch: "feature/sprint-${day}-${slug}"
+  commit_convention: true
+  quality_gates:
+    - "헬스체크 엔드포인트 통과(/health 200)"
+    - "PRD 수락기준 체크리스트 충족"
+    - "TRD NFR 경보/대시보드 구성: 브리핑 생성 평균≤60s, P95≤120s, 알림≤2m"
+    - "보안: OAuth scope 최소, 데이터 전송/저장 암호화, 테넌트 격리 테스트"
+  outputs:
+    - "PR with demo URL, screenshots"
+    - "docs/runbook/${day}-checklist.md"
+    - "docs/ADR/*.md (결정 사항)"
+days:
+  D1:
+    goal: "CDK 인프라 골격 + Cognito Hosted UI 스텁 + Next.js 부트스트랩 + /health"   # 일정 근거
+    steps:
+      - "CDK 스택: CloudFront+S3(정적 FE), API Gateway+Lambda(REST), DynamoDB(단일테이블), WAF"
+      - "Cognito User Pool/도메인(Hosted UI) 생성, Google/GitHub IdP 자리"
+      - "Next.js(ko/en i18n) 부트스트랩, /health 라우트"
+    deliverables:
+      - "배포 URL(Front), /health 200"
+      - "PR + 스크린샷"
+  D2:
+    goal: "멀티테넌시 키 설계 & 팀 생성 온보딩"
+    steps:
+      - "DynamoDB 키 설계: PK=TENANT#.., GSI(1:1, 요약 타임라인)"
+      - "최초 로그인→팀 생성 플로우, tenantId 미들웨어"
+    deliverables:
+      - "신규 계정→팀 생성→대시보드 진입 데모"
+  D3:
+    goal: "초대/가입 & 랜딩 Top Fold 연결"
+    steps:
+      - "초대 링크(만료/1회용), SES 메일 템플릿"
+      - "랜딩 Top Fold(헤드라인/CTA) 1차 구현→가입 연결"
+    deliverables:
+      - "팀장 초대→수락 플로우, 랜딩→가입 전환"
+  D4:
+    goal: "GitHub OAuth & 7일 이벤트 수집"
+    steps:
+      - "OAuth scope 최소화(repo:read, read:org)"
+      - "커밋/PR/리뷰 코멘트 수집, KMS 암호화 저장"
+    deliverables:
+      - "연동 완료 상태, 수집 샘플 로그"
+  D5:
+    goal: "성과 요약 v1(Contribution/Complexity/Collaboration) + 팀원 프로필 카드"
+    steps:
+      - "원시→집계→LLM 요약 파이프라인"
+      - "프로필 UI에 차트+요약"
+    deliverables:
+      - "주간 성과 요약 UI(1명 기준)"
+  D6:
+    goal: "Google Calendar 연동 & 1:1 감지"
+    steps:
+      - "readonly 스코프, 참석자 2 & 키워드 필터(1:1)"
+      - "이후 24h, T‑60~90m 범위 큐잉"
+    deliverables:
+      - "다가올 미팅 목록 API/로그"
+  D7:
+    goal: "Step Functions 오케스트레이션(GenerateBriefing)"
+    steps:
+      - "요약 로드/생성→로드맵 조회→리스크 룰→LLM 합성→S3 저장→메타쓰기"
+      - "재시도/서킷/ DLQ 표준"
+    deliverables:
+      - "수동 트리거로 브리핑 JSON/S3, 링크"
+  D8:
+    goal: "브리핑 노트 UI & Private Notes"
+    steps:
+      - "최근활동/목표진행/리스크/추천질문/비공개메모"
+      - "메모 자동저장, 히스토리"
+    deliverables:
+      - "브리핑 읽기/메모 데모"
+  D9:
+    goal: "알림 채널(SES/Slack) & T‑1h 트리거"
+    steps:
+      - "미팅 1h 전 메일/슬랙 알림, 채널 On/Off"
+    deliverables:
+      - "실 캘린더 이벤트→알림→브리핑 열람"
+  D10:
+    goal: "대시보드/팀설정 마감"
+    steps:
+      - "다가올 1:1 카드, 트렌드 자리, 팀원 리스트"
+      - "OKR/스택 저장/수정, 재인증 버튼"
+    deliverables:
+      - "대시→1:1→브리핑 원클릭 경로"
+  D11:
+    goal: "개인 로드맵 초안 생성"
+    steps:
+      - "OKR/스택+최근 성과→AI 로드맵 초안"
+      - "수정/확정/공유 권한"
+    deliverables:
+      - "로드맵 초안→확정→프로필 노출"
+  D12:
+    goal: "주간 기술 트렌드 요약(경량)"
+    steps:
+      - "합법 소스 수집→스택 키워드 매칭→요약"
+      - "비용 가드(캐시/주1회)"
+    deliverables:
+      - "대시보드 ‘트렌드 3개’ 카드"
+  D13:
+    goal: "랜딩 페이지 완성(IA/카피/접근성/SEO)"
+    steps:
+      - "섹션: Top Fold→문제→해결→Aha 데모→기능→신뢰/가격→보안/연동→푸터 CTA"
+      - "대비 4.5:1, 모바일 우선, 텍스트 LCP"
+    deliverables:
+      - "랜딩 퍼블리시 & 가입 전환 경로"
+  D14:
+    goal: "성능·보안 하드닝 & 관측성"
+    steps:
+      - "브리핑 평균 60s/P95 120s/알림 2m SLO 점검"
+      - "KMS/최소권한/IAM/감사/X‑Ray/비용 알림"
+      - "혼돈/부하 테스트(429/503 백오프)"
+    deliverables:
+      - "대시보드/알람/리포트 스냅샷"
+  D15:
+    goal: "릴리스 후보·피처 플래그·베타 롤아웃"
+    steps:
+      - "AppConfig 플래그, 삭제권/보존정책 점검"
+      - "베타 체크리스트(Aha 체험율/알림 성공률/오류율)"
+      - "RC 태깅·배포·롤백 계획"
+    deliverables:
+      - "베타 안내 메일/릴리스 노트/롤백 계획"
