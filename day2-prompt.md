@@ -45,15 +45,13 @@
 5) PR 생성 + 다음 액션 아이템(To‑Do) 남김.
 
 [오늘 수행]
-  D1:
-    goal: "CDK 인프라 골격 + Cognito Hosted UI 스텁 + Next.js 부트스트랩 + /health"   # 일정 근거
+  D2:
+    goal: "멀티테넌시 키 설계 & 팀 생성 온보딩"
     steps:
-      - "CDK 스택: CloudFront+S3(정적 FE), API Gateway+Lambda(REST), DynamoDB(단일테이블), WAF"
-      - "Cognito User Pool/도메인(Hosted UI) 생성, Google/GitHub IdP 자리"
-      - "Next.js(ko/en i18n) 부트스트랩, /health 라우트"
+      - "DynamoDB 키 설계: PK=TENANT#.., GSI(1:1, 요약 타임라인)"
+      - "최초 로그인→팀 생성 플로우, tenantId 미들웨어"
     deliverables:
-      - "배포 URL(Front), /health 200"
-      - "PR + 스크린샷"
+      - "신규 계정→팀 생성→대시보드 진입 데모"
 
 [출력]
 - 1) 변경 파일 목록, 2) 새로 추가된 스택/함수/라우트, 3) 배포 URL, 4) 남은 리스크/차단 요소.
