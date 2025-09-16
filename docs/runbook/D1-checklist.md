@@ -3,28 +3,28 @@ Day 1 Checklist (D1)
 - Goal: CDK infra skeleton + Cognito Hosted UI + Next.js scaffold + /health
 
 Infra (AWS CDK)
-- [ ] S3 + CloudFront for static frontend
-- [ ] WAFv2 attached to CloudFront (AWS managed rules)
-- [ ] DynamoDB table (pk/sk)
-- [ ] API Gateway REST with `GET /health`
-- [ ] Lambda handler wired to `/health`
-- [ ] Cognito User Pool + App Client + Hosted UI domain
+- [x] S3 + CloudFront for static frontend
+- [x] WAFv2 attached to CloudFront (AWS managed rules)
+- [x] DynamoDB table (pk/sk)
+- [x] API Gateway REST with `GET /health`
+- [x] Lambda handler wired to `/health`
+- [x] Cognito User Pool + App Client + Hosted UI domain
 - [ ] Optional: Google/GitHub IdP configured
 
 Web (Next.js)
-- [ ] i18n locales: en, ko
-- [ ] `GET /health` returns 200 JSON
-- [ ] Basic home page renders without errors
+- [x] i18n locales: en, ko
+- [x] `GET /health` returns 200 JSON
+- [x] Basic home page renders without errors
 
 Observability & NFR
 - [ ] Health latency targets: p50 ≤ 60ms, p95 ≤ 120ms (SLO)
-- [ ] CloudWatch metrics enabled for WAF and API Gateway
-- [ ] Alarms placeholders created (follow-up to wire thresholds)
+- [x] CloudWatch metrics enabled for WAF and API Gateway
+- [x] Alarms placeholders created (follow-up to wire thresholds)
 
 Security
-- [ ] OAuth over HTTPS only; no implicit flow
+- [x] OAuth over HTTPS only; no implicit flow
 - [ ] ABAC-ready (scopes in place; attributes via IdPs)
-- [ ] WAF common ruleset enabled
+- [x] WAF common ruleset enabled
 
 Release Artifacts
 - [ ] CDK synth succeeds locally

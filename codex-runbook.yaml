@@ -5,7 +5,7 @@ meta:
   references:
     - "./5.1.PRD(MVP).md"          # 제품 범위·수락기준 (Aha! 브리핑) 
     - "./6.1 MVP Spring Backlog.md" # Epic/Story/AC 맵 
-    - "./10. TRD.md"               # 아키텍처·NFR(성능/보안/관측성) 
+    - "./10.1. TRD.md"             # 아키텍처·NFR(성능/보안/관측성) 
     - "./4. MRD.md"                # 시장 문제·가설·페르소나
     - "./1.1.비전과 전략(서비스정의서).md"
     - "./7.2 사용자 여정 항목 정의.md"
