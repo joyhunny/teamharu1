@@ -17,6 +17,28 @@ Usage
 - Synthesize: `npm run synth`
 - Deploy: `npm run deploy`
 
+AWS Credentials & Configuration
+- Option A) AWS CLI profiles (recommended)
+  1. Configure: `aws configure --profile <your-profile>`
+  2. Export or set in shell:
+     - PowerShell: `$env:AWS_PROFILE="<your-profile>"; $env:AWS_REGION="ap-northeast-2"`
+     - CMD: `set AWS_PROFILE=<your-profile>` / `set AWS_REGION=ap-northeast-2`
+- Option B) .env file (local only)
+  - Create `infrastructure/cdk/.env` from `.env.example` with:
+    - `AWS_ACCOUNT_ID`, `AWS_REGION`, optional `AWS_PROFILE`
+    - `RESOURCE_PREFIX` (e.g., `team-ai`)
+    - `COGNITO_DOMAIN_PREFIX` (optional)
+    - Optional IdP secrets: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, etc.
+
+Resource naming prefix
+- Pass prefix via CDK context or env:
+  - Context: `npx cdk deploy -c resourcePrefix=team-ai`
+  - Env: `RESOURCE_PREFIX=team-ai npm run deploy`
+
+OAuth/Cognito settings
+- Context or env can provide callback/logout URLs and IdP secrets.
+- For real deployments, prefer AWS Secrets Manager/SSM Parameter Store over plain env.
+
 Outputs
 - `CloudFrontURL`: Frontend distribution URL
 - `ApiBaseUrl`, `HealthEndpoint`: API endpoints
