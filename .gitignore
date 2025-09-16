@@ -1,0 +1,23 @@
+# Local env files
+infrastructure/cdk/.env
+*.env
+.env*
+!*.env.example
+# AWS CLI local install
+aws-cli/
+AWSCLI/
+*.msi
+*.zip
+# Node artifacts
+**/node_modules/
+**/dist/
+**/.turbo/
+# CDK context/assets
+**/cdk.out/
+**/cdk.context.json
+# Editor/OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
