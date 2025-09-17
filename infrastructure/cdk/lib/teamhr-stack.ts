@@ -179,6 +179,24 @@ export class TeamHRStack extends Stack {
     const health = api.root.addResource('health');
     health.addMethod('GET', new LambdaIntegration(healthFn));
 
+    // D2: Tenant onboarding Lambda and API (POST /tenant)
+    const tenantFn = new NodejsFunction(this, 'TenantFunction', {
+      entry: path.resolve(__dirname, '../../..', 'services/tenant-lambda/src/index.ts'),
+      handler: 'handler',
+      runtime: Runtime.NODEJS_18_X,
+      memorySize: 256,
+      timeout: Duration.seconds(10),
+      tracing: Tracing.ACTIVE,
+      functionName: `${resourcePrefix}-tenant`,
+      environment: {
+        TABLE_NAME: table.tableName,
+      },
+    });
+    table.grantReadWriteData(tenantFn);
+
+    const tenant = api.root.addResource('tenant');
+    tenant.addMethod('POST', new LambdaIntegration(tenantFn));
+
     const deployment = new Deployment(this, 'ApiDeployment', { api });
     const stage = new Stage(this, 'ProdStage', { deployment, stageName: 'prod', tracingEnabled: true });
     api.deploymentStage = stage;
@@ -438,6 +456,10 @@ export class TeamHRStack extends Stack {
     new CfnOutput(this, 'HealthEndpoint', {
       value: api.urlForPath('/health'),
       description: 'GET /health endpoint',
+    });
+    new CfnOutput(this, 'TenantEndpoint', {
+      value: api.urlForPath('/tenant'),
+      description: 'POST /tenant endpoint (create/select tenant)',
     });
     new CfnOutput(this, 'CognitoHostedUiBase', {
       value: `https://${userPoolDomain.domain}.auth.${Stack.of(this).region}.amazoncognito.com`,
