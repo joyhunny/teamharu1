@@ -5,20 +5,22 @@
   "scripts": {
     "build": "tsc -p .",
     "watch": "tsc -w -p .",
-    "synth": "cdk synth",
-    "deploy": "cdk deploy --all",
-    "destroy": "cdk destroy --all"
+    "synth": "dotenv -e .env -- cdk synth",
+    "deploy": "dotenv -e .env -- cdk deploy --all",
+    "destroy": "dotenv -e .env -- cdk destroy --all"
   },
   "devDependencies": {
     "aws-cdk": "2.152.0",
+    "dotenv-cli": "^7.4.1",
     "esbuild": "^0.19.12",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.5"
   },
   "dependencies": {
+    "@aws-sdk/client-sts": "^3.888.0",
     "aws-cdk-lib": "2.152.0",
     "constructs": "^10.3.0",
+    "dotenv": "^16.4.5",
     "source-map-support": "^0.5.21"
   }
 }
-

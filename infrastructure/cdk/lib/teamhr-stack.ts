@@ -1,17 +1,17 @@
-import { Duration, RemovalPolicy, Stack, StackProps, CfnOutput } from 'aws-cdk-lib';
+import { Duration, RemovalPolicy, Stack, StackProps, CfnOutput, SecretValue } from 'aws-cdk-lib';
 import { Alarm, ComparisonOperator, Dashboard, GraphWidget, LegendPosition, Metric, TreatMissingData } from 'aws-cdk-lib/aws-cloudwatch';
 import { Construct } from 'constructs';
 import { Bucket, BlockPublicAccess } from 'aws-cdk-lib/aws-s3';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
-import { OriginAccessIdentity, Distribution, ViewerProtocolPolicy, AllowedMethods, CachePolicy, ResponseHeadersPolicy } from 'aws-cdk-lib/aws-cloudfront';
+import { OriginAccessIdentity, Distribution, CfnDistribution, ViewerProtocolPolicy, AllowedMethods, CachePolicy, ResponseHeadersPolicy } from 'aws-cdk-lib/aws-cloudfront';
 import { S3Origin } from 'aws-cdk-lib/aws-cloudfront-origins';
 import { CfnWebACL, CfnWebACLAssociation } from 'aws-cdk-lib/aws-wafv2';
 import { RestApi, LambdaIntegration, Deployment, Stage } from 'aws-cdk-lib/aws-apigateway';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Runtime, Tracing } from 'aws-cdk-lib/aws-lambda';
-import { Table, AttributeType, BillingMode } from 'aws-cdk-lib/aws-dynamodb';
+import { Table, AttributeType, BillingMode, ProjectionType } from 'aws-cdk-lib/aws-dynamodb';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
-import { UserPool, UserPoolClient, OAuthScope, ProviderAttribute, UserPoolIdentityProviderGoogle, CfnUserPoolDomain } from 'aws-cdk-lib/aws-cognito';
+import { UserPool, UserPoolClient, OAuthScope, ProviderAttribute, UserPoolIdentityProviderGoogle, CfnUserPoolDomain, UserPoolClientIdentityProvider, StringAttribute, ResourceServerScope } from 'aws-cdk-lib/aws-cognito';
 import * as path from 'path';
 
 export class TeamHRStack extends Stack {
@@ -20,6 +20,44 @@ export class TeamHRStack extends Stack {
 
     // Configurable resource prefix (context/env). Example: -c resourcePrefix=team-ai
     const resourcePrefix: string = (this.node.tryGetContext('resourcePrefix') as string) || process.env.RESOURCE_PREFIX || 'teamhr';
+
+    const coerceString = (value: unknown): string | undefined => {
+      if (value === undefined || value === null) {
+        return undefined;
+      }
+      const str = String(value).trim();
+      return str.length > 0 ? str : undefined;
+    };
+
+    const coerceStringArray = (value: unknown): string[] | undefined => {
+      if (value === undefined || value === null) {
+        return undefined;
+      }
+      if (Array.isArray(value)) {
+        const normalized = value
+          .map((item) => coerceString(item))
+          .filter((item): item is string => !!item);
+        return normalized.length > 0 ? normalized : undefined;
+      }
+      if (typeof value === 'string') {
+        const trimmed = value.trim();
+        if (!trimmed) {
+          return undefined;
+        }
+        try {
+          const parsed = JSON.parse(trimmed);
+          if (Array.isArray(parsed)) {
+            return coerceStringArray(parsed);
+          }
+        } catch {}
+        const normalized = trimmed
+          .split(',')
+          .map((item) => item.trim())
+          .filter((item) => item.length > 0);
+        return normalized.length > 0 ? normalized : undefined;
+      }
+      return undefined;
+    };
 
     // S3 bucket for static site assets
     const siteBucket = new Bucket(this, 'WebBucket', {
@@ -52,6 +90,8 @@ export class TeamHRStack extends Stack {
       comment: 'TeamHR Frontend (D1)',
     });
 
+    const distributionResource = distribution.node.defaultChild as CfnDistribution;
+    const stackRegion = Stack.of(this).region;
     // Deploy minimal static site assets (from repo web/public)
     new BucketDeployment(this, 'DeployWebAssets', {
       destinationBucket: siteBucket,
@@ -62,9 +102,10 @@ export class TeamHRStack extends Stack {
 
     // WAFv2 Web ACL with AWS Managed Rules
     const wafMetricName = `${resourcePrefix}WebWAF`;
+    const wafScope: 'CLOUDFRONT' | 'REGIONAL' = stackRegion && stackRegion !== 'us-east-1' ? 'REGIONAL' : 'CLOUDFRONT';
     const webAcl = new CfnWebACL(this, 'WebWAF', {
       defaultAction: { allow: {} },
-      scope: 'CLOUDFRONT',
+      scope: wafScope,
       visibilityConfig: {
         cloudWatchMetricsEnabled: true,
         metricName: wafMetricName,
@@ -90,10 +131,9 @@ export class TeamHRStack extends Stack {
       ],
     });
 
-    new CfnWebACLAssociation(this, 'WebWAFAssoc', {
-      resourceArn: `arn:aws:cloudfront::${Stack.of(this).account}:distribution/${distribution.distributionId}`,
-      webAclArn: webAcl.attrArn,
-    });
+    if (wafScope === 'CLOUDFRONT') {
+      distributionResource.addPropertyOverride('DistributionConfig.WebACLId', webAcl.attrArn);
+    }
 
     // DynamoDB table (generic key schema pk/sk)
     const table = new Table(this, 'TeamHRTable', {
@@ -101,6 +141,19 @@ export class TeamHRStack extends Stack {
       sortKey: { name: 'sk', type: AttributeType.STRING },
       billingMode: BillingMode.PAY_PER_REQUEST,
       removalPolicy: RemovalPolicy.DESTROY, // change to RETAIN in prod
+    });
+    // D2 scaffold: GSIs per TRD
+    table.addGlobalSecondaryIndex({
+      indexName: 'GSI1',
+      partitionKey: { name: 'gsi1pk', type: AttributeType.STRING },
+      sortKey: { name: 'gsi1sk', type: AttributeType.STRING },
+      projectionType: ProjectionType.ALL,
+    });
+    table.addGlobalSecondaryIndex({
+      indexName: 'GSI2',
+      partitionKey: { name: 'gsi2pk', type: AttributeType.STRING },
+      sortKey: { name: 'gsi2sk', type: AttributeType.STRING },
+      projectionType: ProjectionType.ALL,
     });
 
     // Health Lambda (Node.js)
@@ -130,6 +183,14 @@ export class TeamHRStack extends Stack {
     const stage = new Stage(this, 'ProdStage', { deployment, stageName: 'prod', tracingEnabled: true });
     api.deploymentStage = stage;
 
+    if (wafScope === 'REGIONAL' && stackRegion) {
+      const apiStageArn = `arn:aws:apigateway:${stackRegion}::/restapis/${api.restApiId}/stages/${stage.stageName}`;
+      new CfnWebACLAssociation(this, 'ApiWafAssociation', {
+        resourceArn: apiStageArn,
+        webAclArn: webAcl.attrArn,
+      });
+    }
+
     // Observability: CloudWatch metrics and placeholder alarms/dashboard
     // API Gateway metrics (errors/latency)
     const api5xxMetric = new Metric({
@@ -153,12 +214,28 @@ export class TeamHRStack extends Stack {
       period: Duration.minutes(5),
       statistic: 'p50',
     });
+    // Resource-specific latency metrics for /health (D1 SLO)
+    const apiLatencyP95Health = new Metric({
+      namespace: 'AWS/ApiGateway',
+      metricName: 'Latency',
+      dimensionsMap: { ApiName: api.restApiName, Stage: stage.stageName, Resource: '/health', Method: 'GET' },
+      period: Duration.minutes(5),
+      statistic: 'p95',
+    });
+    const apiLatencyP50Health = new Metric({
+      namespace: 'AWS/ApiGateway',
+      metricName: 'Latency',
+      dimensionsMap: { ApiName: api.restApiName, Stage: stage.stageName, Resource: '/health', Method: 'GET' },
+      period: Duration.minutes(5),
+      statistic: 'p50',
+    });
 
-    // WAF (CloudFront scope) metrics placeholder — relies on WebACL metric name
+    // WAF (CloudFront scope) metrics placeholder ??relies on WebACL metric name
+    const wafMetricRegion = wafScope === 'CLOUDFRONT' ? 'Global' : stackRegion ?? 'REGIONAL';
     const wafBlockedMetric = new Metric({
       namespace: 'AWS/WAFV2',
       metricName: 'BlockedRequests',
-      dimensionsMap: { WebACL: wafMetricName, Region: 'Global' },
+      dimensionsMap: { WebACL: wafMetricName, Region: wafMetricRegion },
       period: Duration.minutes(5),
       statistic: 'sum',
     });
@@ -170,7 +247,7 @@ export class TeamHRStack extends Stack {
       evaluationPeriods: 1,
       comparisonOperator: ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
       treatMissingData: TreatMissingData.NOT_BREACHING,
-      alarmDescription: 'Placeholder: API Gateway 5XX spikes (>=1 in 5m) — tune later',
+      alarmDescription: 'Placeholder: API Gateway 5XX spikes (>=1 in 5m) ??tune later',
     });
 
     new Alarm(this, 'ApiLatencyP95Alarm', {
@@ -189,6 +266,24 @@ export class TeamHRStack extends Stack {
       comparisonOperator: ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
       treatMissingData: TreatMissingData.NOT_BREACHING,
       alarmDescription: 'TRD: API Gateway latency p50 >= 60ms',
+    });
+
+    // D1 SLO: /health stricter latency targets
+    new Alarm(this, 'HealthLatencyP95Alarm', {
+      metric: apiLatencyP95Health,
+      threshold: 120,
+      evaluationPeriods: 1,
+      comparisonOperator: ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
+      treatMissingData: TreatMissingData.NOT_BREACHING,
+      alarmDescription: 'D1: /health latency p95 >= 120ms',
+    });
+    new Alarm(this, 'HealthLatencyP50Alarm', {
+      metric: apiLatencyP50Health,
+      threshold: 60,
+      evaluationPeriods: 1,
+      comparisonOperator: ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
+      treatMissingData: TreatMissingData.NOT_BREACHING,
+      alarmDescription: 'D1: /health latency p50 >= 60ms',
     });
 
     new Alarm(this, 'WafBlockedRequestsAlarm', {
@@ -233,48 +328,101 @@ export class TeamHRStack extends Stack {
       }),
     );
 
+    // /health latency widgets (D1 SLO)
+    dashboard.addWidgets(
+      new GraphWidget({
+        title: '/health Latency p95 (ms, 5m)',
+        left: [apiLatencyP95Health],
+        legendPosition: LegendPosition.RIGHT,
+        width: 12,
+      }),
+      new GraphWidget({
+        title: '/health Latency p50 (ms, 5m)',
+        left: [apiLatencyP50Health],
+        legendPosition: LegendPosition.RIGHT,
+        width: 12,
+      }),
+    );
+
     // Cognito User Pool and Hosted UI setup
     const userPool = new UserPool(this, 'UserPool', {
       selfSignUpEnabled: false,
       signInAliases: { email: true },
       passwordPolicy: { minLength: 8, requireLowercase: true, requireUppercase: true, requireDigits: true },
       removalPolicy: RemovalPolicy.DESTROY, // change to RETAIN in prod
+      // ABAC-ready: include tenantId as a custom attribute
+      customAttributes: {
+        tenantId: new StringAttribute({ mutable: true }),
+      },
     });
 
     // Identity Providers (optional placeholders, require context vars)
-    const googleClientId = this.node.tryGetContext('googleClientId');
-    const googleClientSecret = this.node.tryGetContext('googleClientSecret');
+    const googleClientId = coerceString(this.node.tryGetContext('googleClientId')) ?? coerceString(process.env.GOOGLE_CLIENT_ID);
+    const googleClientSecret =
+      coerceString(this.node.tryGetContext('googleClientSecret')) ?? coerceString(process.env.GOOGLE_CLIENT_SECRET);
+
+    const identityProviders = [UserPoolClientIdentityProvider.COGNITO];
+    let googleProvider: UserPoolIdentityProviderGoogle | undefined;
     if (googleClientId && googleClientSecret) {
-      new UserPoolIdentityProviderGoogle(this, 'GoogleIdP', {
+      googleProvider = new UserPoolIdentityProviderGoogle(this, 'GoogleIdP', {
         clientId: googleClientId,
-        clientSecret: googleClientSecret,
+        clientSecretValue: SecretValue.unsafePlainText(googleClientSecret),
         userPool,
         attributeMapping: {
           email: ProviderAttribute.GOOGLE_EMAIL,
           givenName: ProviderAttribute.GOOGLE_GIVEN_NAME,
           familyName: ProviderAttribute.GOOGLE_FAMILY_NAME,
         },
+        scopes: ['openid', 'profile', 'email'],
       });
+      identityProviders.push(UserPoolClientIdentityProvider.GOOGLE);
     }
 
     // Note: GitHub is not a built-in Cognito IdP. Add via OIDC/SAML if applicable.
 
-    const callbackUrls: string[] = this.node.tryGetContext('oauthCallbackUrls') ?? ['https://example.com/api/auth/callback'];
-    const logoutUrls: string[] = this.node.tryGetContext('oauthLogoutUrls') ?? ['https://example.com'];
+    const callbackUrls =
+      coerceStringArray(this.node.tryGetContext('oauthCallbackUrls')) ??
+      coerceStringArray(process.env.OAUTH_CALLBACK_URLS) ??
+      ['https://example.com/api/auth/callback'];
+    const logoutUrls =
+      coerceStringArray(this.node.tryGetContext('oauthLogoutUrls')) ??
+      coerceStringArray(process.env.OAUTH_LOGOUT_URLS) ??
+      ['https://example.com'];
+    // ABAC-ready: define resource server and scopes
+    const scopeTenantRead = new ResourceServerScope({ scopeName: 'tenant.read', scopeDescription: 'Read tenant data' });
+    const scopeTenantWrite = new ResourceServerScope({ scopeName: 'tenant.write', scopeDescription: 'Write tenant data' });
+    const resourceServer = userPool.addResourceServer('ApiResourceServer', {
+      identifier: `${resourcePrefix}-api`,
+      userPoolResourceServerName: 'api',
+      scopes: [scopeTenantRead, scopeTenantWrite],
+    });
+
     const userPoolClient = new UserPoolClient(this, 'UserPoolClient', {
       userPool,
       generateSecret: false,
       oAuth: {
         callbackUrls,
         logoutUrls,
-        scopes: [OAuthScope.OPENID, OAuthScope.EMAIL, OAuthScope.PROFILE],
+        scopes: [
+          OAuthScope.OPENID,
+          OAuthScope.EMAIL,
+          OAuthScope.PROFILE,
+          OAuthScope.resourceServer(resourceServer, scopeTenantRead),
+          OAuthScope.resourceServer(resourceServer, scopeTenantWrite),
+        ],
       },
-      supportedIdentityProviders: undefined, // derives from configured IdPs
+      supportedIdentityProviders: identityProviders,
     });
+    if (googleProvider) {
+      userPoolClient.node.addDependency(googleProvider);
+    }
 
-    const domainPrefix = this.node.tryGetContext('cognitoDomainPrefix') || `${resourcePrefix}-${Stack.of(this).account}`;
+    const domainPrefixInput =
+      coerceString(this.node.tryGetContext('cognitoDomainPrefix')) ?? coerceString(process.env.COGNITO_DOMAIN_PREFIX);
+    const fallbackDomain = `${resourcePrefix}-${Stack.of(this).account ?? 'userpool'}`;
+    const domainPrefix = (domainPrefixInput ?? fallbackDomain).toLowerCase();
     const userPoolDomain = new CfnUserPoolDomain(this, 'CognitoDomain', {
-      domain: domainPrefix.toLowerCase(),
+      domain: domainPrefix,
       userPoolId: userPool.userPoolId,
     });
 
@@ -297,3 +445,21 @@ export class TeamHRStack extends Stack {
     });
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

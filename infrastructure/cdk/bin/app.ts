@@ -15,10 +15,15 @@ try {
   }
 } catch {}
 
-new TeamHRStack(app, 'TeamHR-D1', {
-  env: {
-    account: process.env.AWS_ACCOUNT_ID || process.env.CDK_DEFAULT_ACCOUNT,
-    region: process.env.AWS_REGION || process.env.CDK_DEFAULT_REGION || 'ap-northeast-2',
-  },
-});
+const account = process.env.AWS_ACCOUNT_ID ?? process.env.CDK_DEFAULT_ACCOUNT;
+const region = process.env.AWS_REGION ?? process.env.CDK_DEFAULT_REGION ?? 'ap-northeast-2';
+
+if (account) {
+  new TeamHRStack(app, 'TeamHR-D1', {
+    env: { account, region },
+  });
+} else {
+  // Let CDK resolve the environment (from credentials) when account is not explicitly provided
+  new TeamHRStack(app, 'TeamHR-D1', {});
+}
 
