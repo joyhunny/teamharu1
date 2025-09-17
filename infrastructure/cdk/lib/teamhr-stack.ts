@@ -141,6 +141,7 @@ export class TeamHRStack extends Stack {
       sortKey: { name: 'sk', type: AttributeType.STRING },
       billingMode: BillingMode.PAY_PER_REQUEST,
       removalPolicy: RemovalPolicy.DESTROY, // change to RETAIN in prod
+      timeToLiveAttribute: 'ttl',
     });
     // D2 scaffold: GSIs per TRD
     table.addGlobalSecondaryIndex({
@@ -196,6 +197,34 @@ export class TeamHRStack extends Stack {
 
     const tenant = api.root.addResource('tenant');
     tenant.addMethod('POST', new LambdaIntegration(tenantFn));
+
+    // D3: Invite Lambda and API (POST /invite, GET /invite/{token})
+    const frontendUrl = `https://${distribution.distributionDomainName}`;
+    const inviteFn = new NodejsFunction(this, 'InviteFunction', {
+      entry: path.resolve(__dirname, '../../..', 'services/invite-lambda/src/index.ts'),
+      handler: 'handler',
+      runtime: Runtime.NODEJS_18_X,
+      memorySize: 256,
+      timeout: Duration.seconds(10),
+      tracing: Tracing.ACTIVE,
+      functionName: `${resourcePrefix}-invite`,
+      environment: {
+        TABLE_NAME: table.tableName,
+        FRONTEND_URL: frontendUrl,
+        SES_SENDER: process.env.SES_SENDER ?? '',
+      },
+    });
+    table.grantReadWriteData(inviteFn);
+    inviteFn.addToRolePolicy(
+      new PolicyStatement({
+        actions: ['ses:SendEmail', 'ses:SendRawEmail'],
+        resources: ['*'],
+      }),
+    );
+    const invite = api.root.addResource('invite');
+    invite.addMethod('POST', new LambdaIntegration(inviteFn));
+    const inviteToken = invite.addResource('{token}');
+    inviteToken.addMethod('GET', new LambdaIntegration(inviteFn));
 
     const deployment = new Deployment(this, 'ApiDeployment', { api });
     const stage = new Stage(this, 'ProdStage', { deployment, stageName: 'prod', tracingEnabled: true });
@@ -460,6 +489,10 @@ export class TeamHRStack extends Stack {
     new CfnOutput(this, 'TenantEndpoint', {
       value: api.urlForPath('/tenant'),
       description: 'POST /tenant endpoint (create/select tenant)',
+    });
+    new CfnOutput(this, 'InviteEndpoint', {
+      value: api.urlForPath('/invite'),
+      description: 'POST /invite endpoint (send magic link)',
     });
     new CfnOutput(this, 'CognitoHostedUiBase', {
       value: `https://${userPoolDomain.domain}.auth.${Stack.of(this).region}.amazoncognito.com`,

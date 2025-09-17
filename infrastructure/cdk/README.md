@@ -3,9 +3,9 @@ Infrastructure (AWS CDK) - D1
 Includes a minimal CDK app that provisions:
 - S3 bucket + CloudFront for static frontend hosting
 - WAFv2 WebACL associated with CloudFront
-- API Gateway (REST) with a GET /health path
-- Lambda (Node.js) handler for /health
-- DynamoDB table (pk/sk)
+- API Gateway (REST) with GET /health, POST /tenant, POST /invite, GET /invite/{token}
+- Lambda (Node.js) handlers for health, tenant onboarding, invite flow
+- DynamoDB table (pk/sk) with TTL (`ttl`) and GSIs (GSI1, GSI2)
 - Cognito User Pool + Hosted UI, with optional Google/GitHub IdPs
 
 Usage
@@ -15,6 +15,7 @@ Usage
   - `cognitoDomainPrefix`, `googleClientId`, `googleClientSecret`, `githubClientId`, `githubClientSecret`,
   - `oauthCallbackUrls` (array), `oauthLogoutUrls` (array)
   - Same keys can also be provided via the `.env` file using their uppercase variants.
+  - D3 (invites): `SES_SENDER` (verified SES email), optional; invite redirects use `CloudFrontURL` output.
 - Synthesize: `npm run synth`
 - Deploy: `npm run deploy`
 
@@ -44,7 +45,7 @@ OAuth/Cognito settings
 
 Outputs
 - `CloudFrontURL`: Frontend distribution URL
-- `ApiBaseUrl`, `HealthEndpoint`: API endpoints
+- `ApiBaseUrl`, `HealthEndpoint`, `TenantEndpoint`, `InviteEndpoint`: API endpoints
 - `CognitoHostedUiBase`: Hosted UI base domain
 
 
