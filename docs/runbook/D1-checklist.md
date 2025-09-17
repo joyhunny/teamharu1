@@ -9,7 +9,7 @@ Infra (AWS CDK)
 - [x] API Gateway REST with `GET /health`
 - [x] Lambda handler wired to `/health`
 - [x] Cognito User Pool + App Client + Hosted UI domain
-- [ ] Optional: Google/GitHub IdP configured
+- [x] Optional: Google IdP enabled via env/context (GitHub via OIDC backlog)
 
 Web (Next.js)
 - [x] i18n locales: en, ko
@@ -17,20 +17,22 @@ Web (Next.js)
 - [x] Basic home page renders without errors
 
 Observability & NFR
-- [ ] Health latency targets: p50 ≤ 60ms, p95 ≤ 120ms (SLO)
+- [x] Health latency targets: p50 60ms, p95 120ms (SLO) — wired as CloudWatch alarms for GET /health
 - [x] CloudWatch metrics enabled for WAF and API Gateway
 - [x] Alarms placeholders created (follow-up to wire thresholds)
 
 Security
 - [x] OAuth over HTTPS only; no implicit flow
-- [ ] ABAC-ready (scopes in place; attributes via IdPs)
+- [x] ABAC-ready (Cognito custom attribute tenantId + resource server scopes tenant.read/tenant.write)
 - [x] WAF common ruleset enabled
 
 Release Artifacts
-- [ ] CDK synth succeeds locally
-- [ ] Deployed endpoints captured (CloudFront URL, API `/health`)
-- [ ] Screenshots of Hosted UI and health check
-- [ ] PR created with summary, how-to-test, rollback notes
+- [x] CDK synth succeeds locally
+- [x] Deployed endpoints captured (CloudFront URL, API `/health`)
+  - CloudFront: https://d2s40e1eflqhlj.cloudfront.net
+  - API health: https://k4hry0d1pf.execute-api.ap-northeast-2.amazonaws.com/prod/health
+- [ ] Screenshots of Hosted UI and health check (drop under docs/runbook/assets/D1/)
+- [ ] PR created with summary, how-to-test, rollback notes (draft prepared at docs/runbook/D1-PR-DRAFT.md)
 
 How to Deploy (summary)
 - `cd infrastructure/cdk && npm install`
@@ -41,4 +43,8 @@ How to Deploy (summary)
 Rollback
 - `npm run destroy` (if fully reverting)
 - Or selectively remove changes via `cdk deploy` of previous known-good commit
+
+
+
+
 

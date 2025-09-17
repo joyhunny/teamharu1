@@ -14,6 +14,7 @@ Usage
 - Context (optional):
   - `cognitoDomainPrefix`, `googleClientId`, `googleClientSecret`, `githubClientId`, `githubClientSecret`,
   - `oauthCallbackUrls` (array), `oauthLogoutUrls` (array)
+  - Same keys can also be provided via the `.env` file using their uppercase variants.
 - Synthesize: `npm run synth`
 - Deploy: `npm run deploy`
 
@@ -28,7 +29,8 @@ AWS Credentials & Configuration
     - `AWS_ACCOUNT_ID`, `AWS_REGION`, optional `AWS_PROFILE`
     - `RESOURCE_PREFIX` (e.g., `team-ai`)
     - `COGNITO_DOMAIN_PREFIX` (optional)
-    - Optional IdP secrets: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, etc.
+    - Optional IdP secrets: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, etc. (Google IdP is auto-enabled when both are set.)
+    - `OAUTH_CALLBACK_URLS` / `OAUTH_LOGOUT_URLS` accept comma-separated values or JSON arrays.
 
 Resource naming prefix
 - Pass prefix via CDK context or env:
@@ -36,11 +38,13 @@ Resource naming prefix
   - Env: `RESOURCE_PREFIX=team-ai npm run deploy`
 
 OAuth/Cognito settings
-- Context or env can provide callback/logout URLs and IdP secrets.
+- Context or env can provide callback/logout URLs and IdP secrets (env takes precedence when both are present).
+- Providing GOOGLE_CLIENT_ID + GOOGLE_CLIENT_SECRET exposes the Google button on the Cognito Hosted UI.
 - For real deployments, prefer AWS Secrets Manager/SSM Parameter Store over plain env.
 
 Outputs
 - `CloudFrontURL`: Frontend distribution URL
 - `ApiBaseUrl`, `HealthEndpoint`: API endpoints
 - `CognitoHostedUiBase`: Hosted UI base domain
+
 
