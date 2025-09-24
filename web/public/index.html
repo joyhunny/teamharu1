@@ -185,9 +185,9 @@
             {"@type":"Question","name":"Fastest path to value?","acceptedAnswer":{"@type":"Answer","text":"Connect GitHub and generate your first 1:1 briefing."}}
           ]}
         </script>
-      </section>
-      <!-- Security & Integrations links -->
-      <section style="padding:24px 0; text-align:center;">
+  </section>
+  <!-- Security & Integrations links -->
+  <section style="padding:24px 0; text-align:center;">
         <div style="max-width:1200px; margin:0 auto; padding:0 24px; color:#4B5563;">
           <p>더 알아보기: <a href="/security" style="color:#1E1E1E;">보안 정책</a> · <a href="/integrations" style="color:#1E1E1E;">연동 서비스</a></p>
         </div>
@@ -202,9 +202,20 @@
             <a href="/onboarding" style="background:#F9F2E9; color:#1E1E1E; padding:14px 24px; border-radius:9999px; text-decoration:none; font-weight:600;">무료로 시작하기</a>
           </div>
         </div>
-      </section>
-    </main>
-  </body>
-  </html>
+  </section>
+  <script>
+    // Normalize CTA links to avoid S3 AccessDenied on directory paths
+    (function(){
+      try {
+        var anchors = document.querySelectorAll('a[href="/onboarding"]');
+        anchors.forEach(function(a){ a.setAttribute('href','/invite/index.html'); });
+        var loginAnchors = document.querySelectorAll('a[href="/login"]');
+        loginAnchors.forEach(function(a){ a.setAttribute('href','/login/index.html'); });
+      } catch(e) {}
+    })();
+  </script>
+</main>
+</body>
+</html>
 
 
