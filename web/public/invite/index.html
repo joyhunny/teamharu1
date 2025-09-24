@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>무료 시작 — 초대 요청</title>
+  </head>
+  <body style="font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; padding: 24px; max-width: 640px; margin: 0 auto;">
+    <h1>무료 시작</h1>
+    <p>이메일을 입력해 초대(매직 링크)를 받아보세요. 또는 로그인으로 바로 진행할 수 있습니다.</p>
+    <p><a href="/login">로그인으로 바로 가기</a></p>
+    <form action="https://jqy68imyij.execute-api.ap-northeast-2.amazonaws.com/prod/invite" method="post" style="display:grid; gap:12px;">
+      <label>
+        이메일
+        <input type="email" name="email" required style="padding:8px; width:100%;" />
+      </label>
+      <label>
+        테넌트 ID(선택)
+        <input type="text" name="tenantId" style="padding:8px; width:100%;" />
+      </label>
+      <button type="submit" style="padding:10px 16px; background:#111; color:#fff; border-radius:8px;">초대 요청</button>
+    </form>
+    <p style="color:#666; font-size: 12px;">참고: 결과는 JSON으로 표시될 수 있습니다.</p>
+  </body>
+  </html>
+

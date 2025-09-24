@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>온보딩 이동</title>
+  </head>
+  <body style="font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; padding: 24px;">
+    <p>온보딩으로 이동 중입니다…</p>
+    <script>
+      // 정적 배포 환경에서는 /onboarding 경로가 없으므로 로그인 경유로 이동
+      window.location.replace('/login');
+    </script>
+    <noscript>
+      <p><a href="/login">로그인으로 이동</a></p>
+    </noscript>
+  </body>
+  </html>
+
