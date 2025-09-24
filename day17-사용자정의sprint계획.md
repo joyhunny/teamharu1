@@ -11,6 +11,8 @@
 - 목표: 랜딩에서 로그인/가입의 명확한 진입 제공, 여정 1(가입/로그인)로 연결
 - 작업
   - 헤더/히어로에 ‘로그인(Hosted UI)’/‘무료 시작’(Invite/온보딩) CTA 노출
+  - [무료 시작] 동작: `/invite`로 이동 → 이메일 입력 후 초대(매직 링크) 발송 → 수신 링크 클릭 시 Hosted UI 로그인/가입 흐름으로 연결(콜백 `/auth/callback`)
+    - 성공 시 온보딩(`/onboarding`) 안내로 유도(초기 테넌트 생성/선택)
   - Hosted UI 콜백 경로 합의(예: `/auth/callback`) 및 링크만 노출(콜백 처리/세션은 후속)
   - 복귀 타겟: 온보딩 페이지 `/onboarding` 연결 확인
 - 연동/의존: Cognito Hosted UI 도메인(CDK 출력), `OAUTH_CALLBACK_URLS` 설정 값
