@@ -1,0 +1,17 @@
+{
+  "TeamHR-D3": {
+    "HealthEndpoint": "https://jqy68imyij.execute-api.ap-northeast-2.amazonaws.com/prod/health",
+    "CloudFrontURL": "https://d36p4zikul9rqe.cloudfront.net",
+    "NotifyPreviewEndpoint": "https://jqy68imyij.execute-api.ap-northeast-2.amazonaws.com/prod/notify/preview",
+    "GithubCollectEndpoint": "https://jqy68imyij.execute-api.ap-northeast-2.amazonaws.com/prod/github/collect",
+    "ApiBaseUrl": "https://jqy68imyij.execute-api.ap-northeast-2.amazonaws.com/prod/",
+    "CalendarMeetingsEndpoint": "https://jqy68imyij.execute-api.ap-northeast-2.amazonaws.com/prod/calendar/meetings",
+    "BriefingGenerateEndpoint": "https://jqy68imyij.execute-api.ap-northeast-2.amazonaws.com/prod/briefing/generate",
+    "CognitoHostedUiBase": "https://team-ai-teamhr-d3.auth.ap-northeast-2.amazoncognito.com",
+    "TenantEndpoint": "https://jqy68imyij.execute-api.ap-northeast-2.amazonaws.com/prod/tenant",
+    "GithubStartAuth": "https://jqy68imyij.execute-api.ap-northeast-2.amazonaws.com/prod/oauth/github/start",
+    "GithubSummaryEndpoint": "https://jqy68imyij.execute-api.ap-northeast-2.amazonaws.com/prod/github/summary",
+    "BriefingListEndpoint": "https://jqy68imyij.execute-api.ap-northeast-2.amazonaws.com/prod/briefing/list",
+    "InviteEndpoint": "https://jqy68imyij.execute-api.ap-northeast-2.amazonaws.com/prod/invite"
+  }
+}

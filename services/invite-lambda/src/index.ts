@@ -1,9 +1,12 @@
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import AWS from 'aws-sdk';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { DynamoDBDocumentClient, PutCommand, GetCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
+import { SESv2Client, SendEmailCommand } from '@aws-sdk/client-sesv2';
 import crypto from 'crypto';
 
-const ddb = new AWS.DynamoDB.DocumentClient();
-const ses = new AWS.SES({ apiVersion: '2010-12-01' });
+const ddbClient = new DynamoDBClient({});
+const ddb = DynamoDBDocumentClient.from(ddbClient);
+const ses = new SESv2Client({});
 const TABLE_NAME = process.env.TABLE_NAME as string;
 const FRONTEND_URL = process.env.FRONTEND_URL as string | undefined;
 const SES_SENDER = process.env.SES_SENDER as string | undefined;
@@ -24,8 +27,8 @@ async function handlePostInvite(event: APIGatewayProxyEventV2): Promise<APIGatew
   const now = Math.floor(Date.now() / 1000);
   const ttl = now + 60 * 60; // 1h
 
-  await ddb
-    .put({
+  await ddb.send(
+    new PutCommand({
       TableName: TABLE_NAME,
       Item: {
         pk: `INVITE#${token}`,
@@ -38,26 +41,28 @@ async function handlePostInvite(event: APIGatewayProxyEventV2): Promise<APIGatew
         ttl,
       },
       ConditionExpression: 'attribute_not_exists(pk) AND attribute_not_exists(sk)'
-    })
-    .promise();
+    }),
+  );
 
   const acceptUrl = FRONTEND_URL ? `${FRONTEND_URL}/invite/accept?token=${token}` : `${event.headers['x-forwarded-proto'] || 'https'}://${event.headers.host}/prod/invite/${token}`;
 
   if (SES_SENDER) {
     try {
-      await ses
-        .sendEmail({
-          Source: SES_SENDER,
+      await ses.send(
+        new SendEmailCommand({
+          FromEmailAddress: SES_SENDER,
           Destination: { ToAddresses: [email] },
-          Message: {
-            Subject: { Data: 'Your TeamHR magic link' },
-            Body: {
-              Text: { Data: `Click to get started: ${acceptUrl}\nThis link expires in 60 minutes.` },
-              Html: { Data: `<p>Click to get started:</p><p><a href="${acceptUrl}">${acceptUrl}</a></p><p>This link expires in 60 minutes.</p>` },
+          Content: {
+            Simple: {
+              Subject: { Data: 'Your TeamHR magic link' },
+              Body: {
+                Text: { Data: `Click to get started: ${acceptUrl}\nThis link expires in 60 minutes.` },
+                Html: { Data: `<p>Click to get started:</p><p><a href=\"${acceptUrl}\">${acceptUrl}</a></p><p>This link expires in 60 minutes.</p>` },
+              },
             },
           },
-        })
-        .promise();
+        }),
+      );
     } catch (e) {
       // Non-fatal for demo if SES not verified
       console.warn('SES send failed:', e);
@@ -73,24 +78,22 @@ async function handleGetInvite(event: APIGatewayProxyEventV2): Promise<APIGatewa
     return { statusCode: 400, body: JSON.stringify({ ok: false, error: 'token_required' }) };
   }
   const pk = `INVITE#${token}`;
-  const res = await ddb
-    .get({ TableName: TABLE_NAME, Key: { pk, sk: 'PENDING' } })
-    .promise();
-  const item = res.Item;
+  const res = await ddb.send(new GetCommand({ TableName: TABLE_NAME, Key: { pk, sk: 'PENDING' } }));
+  const item = res.Item as any;
   if (!item) {
     return { statusCode: 404, body: JSON.stringify({ ok: false, error: 'not_found_or_used' }) };
   }
 
   // Mark as used
-  await ddb
-    .update({
+  await ddb.send(
+    new UpdateCommand({
       TableName: TABLE_NAME,
       Key: { pk, sk: 'PENDING' },
       UpdateExpression: 'SET #status = :s, usedAt = :t',
       ExpressionAttributeNames: { '#status': 'status' },
       ExpressionAttributeValues: { ':s': 'USED', ':t': new Date().toISOString() },
-    })
-    .promise();
+    }),
+  );
 
   const redirect = FRONTEND_URL ? `${FRONTEND_URL}/onboarding?token=${token}` : undefined;
   if (redirect) {
@@ -110,4 +113,3 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
   }
   return { statusCode: 404, body: JSON.stringify({ ok: false, error: 'not_found' }) };
 };
-

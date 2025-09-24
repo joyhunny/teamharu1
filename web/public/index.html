@@ -1,16 +1,210 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>TeamHR</title>
+    <title>TeamHaRu – AI로 10분 만에 준비하는 1:1 미팅</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' ry='12' fill='%23F9F2E9'/%3E%3Cpath d='M18 40c4 4 10 6 14 6 8 0 14-6 14-14 0-8-6-14-14-14-6 0-11 3-13 8' stroke='%231E1E1E' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='24' cy='26' r='3' fill='%231E1E1E'/%3E%3C/svg%3E" />
   </head>
-  <body style="font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; padding: 24px;">
-    <h1>TeamHR</h1>
-    <p>Day 1: Infra + Auth + Web scaffold.</p>
-    <ul>
-      <li>Health check: <a href="/health">/health</a></li>
-    </ul>
+  <body style="font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 0; color: #1E1E1E; background: #F9F2E9; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;">
+    <!-- Deployed via CDK BucketDeployment; bump to refresh encryption v3 -->
+    <header style="position: sticky; top: 0; background: rgba(249, 242, 233, 0.8); backdrop-filter: blur(8px); border-bottom: 1px solid #E5E7EB;">
+      <div style="max-width: 1200px; margin: 0 auto; padding: 0 24px; height: 72px; display: flex; align-items: center; justify-content: space-between;">
+        <strong style="font-family: 'Space Grotesk', sans-serif; font-size: 20px;">TeamHaRu</strong>
+        <nav>
+          <a href="/login" style="color:#1E1E1E; text-decoration:none; font-weight: 600;">로그인</a>
+        </nav>
+      </div>
+    </header>
+    <main>
+      <section style="min-height:70vh; display:grid; align-items:center; padding: 48px 0;">
+        <div style="max-width: 1200px; margin: 0 auto; padding: 0 24px; text-align: center;">
+          <h1 style="margin:0; font-family: 'Space Grotesk', sans-serif; font-size: clamp(3rem, 10vw, 6rem); line-height:1.05; letter-spacing: -0.02em;">
+            <span style="display:block;">1:1 미팅</span>
+            <span style="display:block;">10분 준비</span>
+            <span style="display:block;">AI로 완성</span>
+          </h1>
+          <p style="margin: 24px 0 32px; font-size:18px; color:#4B5563; max-width: 500px; margin-left:auto; margin-right:auto;">지난주 성과·리스크·성장 포인트를 TeamHaRu가 먼저 요약합니다. 준비 시간은 줄이고, 대화의 깊이는 키우세요.</p>
+          <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center;">
+            <a href="/onboarding" style="background:#1E1E1E; color:#F9F2E9; padding:14px 24px; border-radius:9999px; text-decoration:none; font-weight:600;">무료로 시작</a>
+            <a href="#demo" style="padding:14px 20px; border:1px solid #E5E7EB; border-radius:9999px; text-decoration:none; color:#1E1E1E; background: rgba(255,255,255,0.5);">데모 영상 보기</a>
+          </div>
+          <div style="display:flex; gap:16px; align-items:center; color:#4B5563; font-size:14px; justify-content:center; margin-top: 32px;">
+            <span>OAuth 2.0·최소 권한</span>
+            <span>·</span>
+            <span>전송/저장 데이터 암호화</span>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Section 2: Problem -> Solution -->
+      <section style="padding: 48px 0; border-top:1px solid #E5E7EB;">
+        <div style="max-width: 1200px; margin: 0 auto; padding: 0 24px;">
+            <h2 style="text-align:center; font-family: 'Space Grotesk', sans-serif; font-size: 2.5rem; margin-top:0; margin-bottom: 32px;">1:1 미팅, 이런 어려움이 있었나요?</h2>
+            <div style="display:grid; gap:24px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+                <div style="border:1px solid #E5E7EB; border-radius:16px; padding:24px; background: #fff;">
+                    <h3 style="margin-top:0; font-family: 'Space Grotesk', sans-serif;">AI 시대, 평가는 공정한가요?</h3>
+                    <p style="color:#4B5563;">코드·PR·리뷰를 문제 해결력 기준으로 요약하여, 팀장의 직관을 데이터로 보완합니다.</p>
+                </div>
+                <div style="border:1px solid #E5E7EB; border-radius:16px; padding:24px; background: #fff;">
+                    <h3 style="margin-top:0; font-family: 'Space Grotesk', sans-serif;">1:1 준비, 늘 시간에 쫓깁니다.</h3>
+                    <p style="color:#4B5563;">미팅 1시간 전, 슬랙으로 브리핑 노트가 자동 도착합니다. 10분만 투자해 대화의 질을 높이세요.</p>
+                </div>
+                <div style="border:1px solid #E5E7EB; border-radius:16px; padding:24px; background: #fff;">
+                    <h3 style="margin-top:0; font-family: 'Space Grotesk', sans-serif;">성장 기회가 없다는 팀원의 말</h3>
+                    <p style="color:#4B5563;">팀의 OKR과 연결된 개인별 성장 로드맵 초안을 AI가 제안하여, 막연한 불안을 명확한 실행 계획으로 바꿉니다.</p>
+                </div>
+            </div>
+        </div>
+      </section>
+
+      <!-- Demo (loop) with reduced motion respect -->
+      <section id="demo" style="padding: 48px 0; border-top:1px solid #E5E7EB;">
+        <div style="max-width:1200px; margin:0 auto; padding:0 24px; display:grid; gap:16px; text-align:center;">
+          <h2 style="margin:0; font-size:28px; font-family: 'Space Grotesk', sans-serif;">Aha! 모멘트: 이렇게 쉬워집니다</h2>
+          <p style="margin:0 auto 16px; color:#4B5563; max-width: 500px;">캘린더에 1:1 미팅이 잡히면, TeamHaRu가 알아서 GitHub 활동을 분석하고 브리핑 노트를 준비합니다.</p>
+          <img src="/assets/demo-loop.svg" alt="주간 활동이 1:1 브리핑으로 응축되는 흐름" loading="lazy" width="800" height="450" style="max-width:100%; height:auto; border:1px solid #E5E7EB; border-radius:16px; margin:0 auto;" />
+          <p style="margin:0; color:#4B5563; font-size:14px;">시스템 설정에 따라 모션이 최소화됩니다.</p>
+        </div>
+      </section>
+      <section id="apis" style="padding: 48px 0; border-top:1px solid #E5E7EB;">
+        <div style="max-width: 1200px; margin: 0 auto; padding: 0 24px;">
+          <h2 style="margin:0 0 24px 0; font-size:28px; text-align:center; font-family: 'Space Grotesk', sans-serif;">핵심 기능 3가지</h2>
+          <div style="display:grid; gap:24px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));">
+            <div style="border:1px solid #E5E7EB; border-radius:16px; padding:24px; background: #fff;">
+              <h3 style="margin-top:0; font-family: 'Space Grotesk', sans-serif;">AI 성과 분석</h3>
+              <p style="color:#4B5563;">단순 기여 횟수가 아닌, 코드·PR·리뷰의 ‘문제 해결력’을 중심으로 지난 활동을 요약합니다.</p>
+            </div>
+            <div style="border:1px solid #E5E7EB; border-radius:16px; padding:24px; background: #fff;">
+              <h3 style="margin-top:0; font-family: 'Space Grotesk', sans-serif;">1:1 미팅 어시스턴트</h3>
+              <p style="color:#4B5563;">AI 추천 질문, 어젠다, 그리고 팀장만 볼 수 있는 비공개 메모 기능까지 제공합니다.</p>
+            </div>
+            <div style="border:1px solid #E5E7EB; border-radius:16px; padding:24px; background: #fff;">
+              <h3 style="margin-top:0; font-family: 'Space Grotesk', sans-serif;">성장 로드맵 제안</h3>
+              <p style="color:#4B5563;">팀의 목표와 기술 스택에 맞춰 개인별 성장 로드맵 초안을 생성하고 함께 편집할 수 있습니다.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section style="padding:48px 0;">
+        <div style="max-width:1200px; margin:0 auto; padding:0 24px;">
+          <h3 style="margin:0 0 16px 0; text-align:center; font-family: 'Space Grotesk', sans-serif; font-size: 20px;">신뢰하는 기업들</h3>
+          <div style="display:flex; gap:48px; flex-wrap:wrap; color:#4B5563; align-items:center; justify-content:center; filter: grayscale(100%) opacity(60%);">
+            <img src="/assets/logos/acme.svg" alt="Acme" width="120" height="30" loading="lazy"/>
+            <img src="/assets/logos/contoso.svg" alt="Contoso" width="120" height="30" loading="lazy"/>
+            <img src="/assets/logos/globex.svg" alt="Globex" width="120" height="30" loading="lazy"/>
+          </div>
+        </div>
+      </section>
+      <!-- Pricing & ROI with simple calculator -->
+      <section style="padding:48px 0; border-top:1px solid #E5E7EB;">
+        <div style="max-width:1200px; margin:0 auto; padding:0 24px; display:grid; gap:24px;">
+          <h2 style="margin:0; font-size:28px; text-align:center; font-family: 'Space Grotesk', sans-serif;">요금제 및 예상 ROI</h2>
+          <div style="display:grid; gap:24px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));">
+            <div style="border:1px solid #E5E7EB; border-radius:16px; padding:24px; background: #fff;">
+              <div style="font-weight:700; font-family: 'Space Grotesk', sans-serif;">Free (Beta)</div>
+              <div style="font-size:28px; margin:4px 0 12px; font-family: 'Space Grotesk', sans-serif;">$0</div>
+              <ul style="margin:0; padding-left:18px; color:#4B5563; display:grid; gap:8px;">
+                <li>주간 요약</li><li>1:1 브리핑</li><li>로드맵 초안</li>
+              </ul>
+            </div>
+            <div style="border:2px solid #1E1E1E; border-radius:16px; padding:24px; background: #fff;">
+              <div style="font-weight:700; font-family: 'Space Grotesk', sans-serif;">Team</div>
+              <div style="font-size:28px; margin:4px 0 12px; font-family: 'Space Grotesk', sans-serif;">$15</div>
+              <ul style="margin:0; padding-left:18px; color:#4B5563; display:grid; gap:8px;">
+                <li>Free 플랜의 모든 기능</li><li>공유 및 역할 관리</li><li>Slack/Email 알림</li>
+              </ul>
+            </div>
+            <div style="border:1px solid #E5E7EB; border-radius:16px; padding:24px; background: #fff;">
+              <div style="font-weight:700; font-family: 'Space Grotesk', sans-serif;">Org</div>
+              <div style="font-size:28px; margin:4px 0 12px; font-family: 'Space Grotesk', sans-serif;">Contact</div>
+              <ul style="margin:0; padding-left:18px; color:#4B5563; display:grid; gap:8px;">
+                <li>SSO</li><li>감사 및 정책</li><li>전담 지원</li>
+              </ul>
+            </div>
+          </div>
+          <div style="border:1px solid #E5E7EB; border-radius:12px; padding:12px;">
+            <strong>ROI Estimator</strong>
+            <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:8px;">
+              <label>Hourly rate ($)
+                <input id="roiRate" type="number" min="0" step="10" value="80" style="margin-left:8px;" />
+              </label>
+              <label>Headcount
+                <input id="roiHeads" type="number" min="1" step="1" value="5" style="margin-left:8px;" />
+              </label>
+              <label>Minutes saved / wk
+                <input id="roiMinutes" type="number" min="0" step="5" value="30" style="margin-left:8px;" />
+              </label>
+              <div id="roiOut" style="margin-left:auto; color:#4B5563;">Monthly savings: $0</div>
+            </div>
+          </div>
+        </div>
+        <script>
+          (function(){
+            function calc(){
+              var r=+document.getElementById('roiRate').value||0;
+              var h=+document.getElementById('roiHeads').value||0;
+              var m=+document.getElementById('roiMinutes').value||0;
+              var monthly = (r/60)*m*h*4; // 4 weeks
+              document.getElementById('roiOut').textContent = 'Monthly savings: $'+Math.round(monthly).toLocaleString();
+            }
+            ['roiRate','roiHeads','roiMinutes'].forEach(function(id){
+              var el=document.getElementById(id); if(el) el.addEventListener('input', calc);
+            });
+            calc();
+          })();
+        </script>
+      </section>
+      <!-- FAQ with JSON-LD -->
+      <section style="padding:48px 0; border-top:1px solid #E5E7EB;">
+        <div style="max-width:1200px; margin:0 auto; padding:0 24px;">
+          <h2 style="margin:0 0 16px 0; font-size:28px; text-align:center; font-family: 'Space Grotesk', sans-serif;">자주 묻는 질문 (FAQ)</h2>
+          <div style="max-width: 800px; margin: 0 auto; display:grid; gap:12px;">
+            <details style="border:1px solid #E5E7EB; border-radius:12px; padding:16px; background: #fff;">
+              <summary style="font-weight:600; cursor:pointer;">GitHub는 어떻게 연결하나요?</summary>
+              <p style="margin-top:12px; color:#4B5563; line-height: 1.6;">가입 후 온보딩 과정에서 'GitHub 연결' 버튼을 통해 최소한의 권한(읽기)으로 연동할 수 있습니다. OAuth 2.0 표준을 사용합니다.</p>
+            </details>
+            <details style="border:1px solid #E5E7EB; border-radius:12px; padding:16px; background: #fff;">
+              <summary style="font-weight:600; cursor:pointer;">데이터는 안전하게 관리되나요?</summary>
+              <p style="margin-top:12px; color:#4B5563; line-height: 1.6;">네, 모든 데이터는 전송 및 저장 과정에서 암호화되며, 각 고객사(테넌트)별로 완벽히 격리된 데이터베이스에 저장되어 안전하게 관리됩니다.</p>
+            </details>
+            <details style="border:1px solid #E5E7EB; border-radius:12px; padding:16px; background: #fff;">
+              <summary style="font-weight:600; cursor:pointer;">가장 빠르게 가치를 경험하는 방법은?</summary>
+              <p style="margin-top:12px; color:#4B5563; line-height: 1.6;">GitHub와 Google Calendar를 연결하고, 다가오는 첫 1:1 미팅 브리핑 노트를 받아보는 것이 최고의 시작입니다. 평균 10분 이내에 설정이 완료됩니다.</p>
+            </details>
+          </div>
+        </div>
+        <script type="application/ld+json">
+          {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+            {"@type":"Question","name":"How do I connect GitHub?","acceptedAnswer":{"@type":"Answer","text":"Use the Connect GitHub button; OAuth minimal scopes."}},
+            {"@type":"Question","name":"Is data secure?","acceptedAnswer":{"@type":"Answer","text":"Per-tenant isolation; encrypted in transit and at rest."}},
+            {"@type":"Question","name":"Fastest path to value?","acceptedAnswer":{"@type":"Answer","text":"Connect GitHub and generate your first 1:1 briefing."}}
+          ]}
+        </script>
+      </section>
+      <!-- Security & Integrations links -->
+      <section style="padding:24px 0; text-align:center;">
+        <div style="max-width:1200px; margin:0 auto; padding:0 24px; color:#4B5563;">
+          <p>더 알아보기: <a href="/security" style="color:#1E1E1E;">보안 정책</a> · <a href="/integrations" style="color:#1E1E1E;">연동 서비스</a></p>
+        </div>
+      </section>
+      <section style="padding:48px 0; background:#1E1E1E; color: #F9F2E9;">
+        <div style="max-width:1200px; margin: 0 auto; padding: 0 24px; display:flex; gap:24px; align-items:center; justify-content:space-between; flex-wrap:wrap;">
+          <div>
+            <div style="font-size:24px; font-weight:700; font-family: 'Space Grotesk', sans-serif;">지금, 팀의 1:1을 바꾸세요.</div>
+            <div style="color:#9CA3AF; margin-top: 8px;">TeamHaRu 베타 버전을 무료로 시작하고, 더 깊이있는 대화를 경험하세요.</div>
+          </div>
+          <div style="display:flex; gap:12px;">
+            <a href="/onboarding" style="background:#F9F2E9; color:#1E1E1E; padding:14px 24px; border-radius:9999px; text-decoration:none; font-weight:600;">무료로 시작하기</a>
+          </div>
+        </div>
+      </section>
+    </main>
   </body>
   </html>
+
 

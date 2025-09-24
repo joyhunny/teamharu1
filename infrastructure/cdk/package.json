@@ -18,6 +18,9 @@
   },
   "dependencies": {
     "@aws-sdk/client-sts": "^3.888.0",
+    "@aws-sdk/client-dynamodb": "^3.888.0",
+    "@aws-sdk/lib-dynamodb": "^3.888.0",
+    "@aws-sdk/client-sesv2": "^3.888.0",
     "aws-cdk-lib": "2.152.0",
     "constructs": "^10.3.0",
     "dotenv": "^16.4.5",

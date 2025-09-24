@@ -1,7 +1,9 @@
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import AWS from 'aws-sdk';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { DynamoDBDocumentClient, PutCommand } from '@aws-sdk/lib-dynamodb';
 
-const ddb = new AWS.DynamoDB.DocumentClient();
+const ddbClient = new DynamoDBClient({});
+const ddb = DynamoDBDocumentClient.from(ddbClient);
 const TABLE_NAME = process.env.TABLE_NAME as string;
 
 export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
@@ -17,19 +19,20 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
 
     // Create tenant profile if not exists
     const tenantPut = ddb
-      .put({
-        TableName: TABLE_NAME,
-        Item: {
-          pk: `TENANT#${tenantId}`,
-          sk: 'PROFILE',
-          tenantId,
-          createdAt: now,
-          updatedAt: now,
-        },
-        ConditionExpression: 'attribute_not_exists(pk) AND attribute_not_exists(sk)',
-      })
-      .promise()
-      .catch((err) => {
+      .send(
+        new PutCommand({
+          TableName: TABLE_NAME,
+          Item: {
+            pk: `TENANT#${tenantId}`,
+            sk: 'PROFILE',
+            tenantId,
+            createdAt: now,
+            updatedAt: now,
+          },
+          ConditionExpression: 'attribute_not_exists(pk) AND attribute_not_exists(sk)',
+        }),
+      )
+      .catch((err: any) => {
         // If already exists, ignore conflict in demo flow
         if (err && err.code === 'ConditionalCheckFailedException') {
           return;
@@ -41,8 +44,8 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
 
     // Optionally create membership for user
     if (userId) {
-      await ddb
-        .put({
+      await ddb.send(
+        new PutCommand({
           TableName: TABLE_NAME,
           Item: {
             pk: `TENANT#${tenantId}#USER#${userId}`,
@@ -53,8 +56,8 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
             createdAt: now,
             updatedAt: now,
           },
-        })
-        .promise();
+        }),
+      );
     }
 
     return {
@@ -70,4 +73,3 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
     };
   }
 };
-
