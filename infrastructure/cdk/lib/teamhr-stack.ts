@@ -769,6 +769,9 @@ export class TeamHRStack extends Stack {
           checklist: true,
           rollout: { tenantAllowlist: [(process.env.DEFAULT_TENANT ?? 't-demo')] },
         }),
+        COGNITO_HOSTED_UI_BASE: `https://${(domainPrefixInput ?? `${resourcePrefix}-${Stack.of(this).stackName.toLowerCase()}`).toLowerCase()}.auth.${Stack.of(this).region}.amazoncognito.com`,
+        COGNITO_CLIENT_ID: userPoolClient.userPoolClientId,
+        OAUTH_REDIRECT_URI: (callbackUrls && callbackUrls.length > 0 ? callbackUrls[0] : ''),
       },
       bundling: { externalModules: ['aws-sdk', '@aws-sdk/*'] },
     });
@@ -794,6 +797,10 @@ export class TeamHRStack extends Stack {
     // D15: Feature configuration endpoint
     const configRes = api.root.addResource('config');
     configRes.addMethod('GET', new LambdaIntegration(briefingApiFn));
+
+    // Auth login redirect endpoint
+    const auth = api.root.addResource('auth');
+    auth.addResource('login').addMethod('GET', new LambdaIntegration(briefingApiFn));
 
     // D11: Roadmap routes
     const roadmap = api.root.addResource('roadmap');

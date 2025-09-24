@@ -102,6 +102,7 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
   if (method === 'GET' && path.endsWith('/insights/checklist')) return getChecklist(event);
   if (method === 'GET' && path.endsWith('/insights/trends')) return getWeeklyTrends(event);
   if (method === 'POST' && path.endsWith('/insights/checklist')) return saveChecklist(event);
+  if (method === 'GET' && path.endsWith('/auth/login')) return redirectToHostedUi(event);
   if (method === 'GET' && path.endsWith('/roadmap/list')) return listRoadmaps(event);
   if (method === 'GET' && path.endsWith('/roadmap/get')) return getRoadmap(event);
   if (method === 'POST' && path.endsWith('/roadmap/save')) return saveRoadmap(event);
@@ -148,6 +149,19 @@ async function saveChecklist(event: APIGatewayProxyEventV2) {
     }),
   );
   return json(200, { ok: true });
+}
+
+// Hosted UI login redirect
+async function redirectToHostedUi(event: APIGatewayProxyEventV2) {
+  const base = process.env.COGNITO_HOSTED_UI_BASE || '';
+  const clientId = process.env.COGNITO_CLIENT_ID || '';
+  const redirect = process.env.OAUTH_REDIRECT_URI || '';
+  const scope = encodeURIComponent('openid email profile');
+  if (!base || !clientId || !redirect) {
+    return json(500, { ok: false, error: 'hosted_ui_not_configured' });
+  }
+  const url = `${base.replace(/\/$/, '')}/login?client_id=${encodeURIComponent(clientId)}&response_type=code&scope=${scope}&redirect_uri=${encodeURIComponent(redirect)}`;
+  return { statusCode: 302, headers: { Location: url }, body: '' } as any;
 }
 
 // Feature flags / Release config (D15)
