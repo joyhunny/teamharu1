@@ -3,17 +3,31 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>로그인으로 이동 중…</title>
+    <title>로그인 이동 중...</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
   </head>
-  <body style="font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; padding: 24px;">
+  <body style="font-family: 'Inter', 'Noto Sans KR', system-ui, -apple-system, Segoe UI, Roboto, Arial; padding: 24px;">
     <p>로그인 페이지로 이동 중입니다…</p>
     <script>
-      // Redirect to API Gateway login endpoint which builds Hosted UI URL dynamically
-      window.location.replace('https://jqy68imyij.execute-api.ap-northeast-2.amazonaws.com/prod/auth/login');
+      (function () {
+        var hostedUiBase = 'https://team-ai-teamhr-d3.auth.ap-northeast-2.amazoncognito.com';
+        var clientId = '6nu1plpu5fon046un5f49j17e7';
+        var redirectUri = 'https://d36p4zikul9rqe.cloudfront.net/auth/callback/index.html';
+        var scopes = encodeURIComponent('openid email profile');
+        var url = hostedUiBase +
+          '/login?client_id=' + encodeURIComponent(clientId) +
+          '&response_type=code&scope=' + scopes +
+          '&redirect_uri=' + encodeURIComponent(redirectUri);
+        window.location.replace(url);
+      })();
     </script>
     <noscript>
-      <p><a href="https://jqy68imyij.execute-api.ap-northeast-2.amazonaws.com/prod/auth/login">여기를 클릭</a>하여 로그인 하세요.</p>
+      <p>
+        <a href="https://team-ai-teamhr-d3.auth.ap-northeast-2.amazoncognito.com/login?client_id=6nu1plpu5fon046un5f49j17e7&amp;response_type=code&amp;scope=openid%20email%20profile&amp;redirect_uri=https%3A%2F%2Fd36p4zikul9rqe.cloudfront.net%2Fauth%2Fcallback%2Findex.html">여기를 클릭</a>하여 로그인하세요.
+      </p>
     </noscript>
   </body>
-  </html>
+</html>
 

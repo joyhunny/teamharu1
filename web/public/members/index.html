@@ -1,0 +1,697 @@
+﻿<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TeamHaRu 멤버 프로필</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@500&family=Raleway:wght@400;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <style>
+      :root {
+        --bg: #f7f7f4;
+        --panel: #ffffff;
+        --border: #e7e5e4;
+        --border-strong: #d4d4d4;
+        --text-main: #111827;
+        --text-secondary: #4b5563;
+        --text-muted: #6b7280;
+        --primary: #111111;
+        --accent: #facc15;
+        --accent-strong: #ca8a04;
+        --success: #22c55e;
+        --danger: #ef4444;
+        --info: #0ea5e9;
+        color-scheme: light;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: 'Raleway', 'Noto Sans KR', system-ui, -apple-system, 'Segoe UI', sans-serif;
+        background: var(--bg);
+        color: var(--text-main);
+      }
+
+      header {
+        position: sticky;
+        top: 0;
+        backdrop-filter: blur(12px);
+        background: rgba(247, 247, 244, 0.9);
+        border-bottom: 1px solid var(--border);
+        z-index: 10;
+      }
+
+      header nav {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 18px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      header nav a {
+        color: var(--text-main);
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      main {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 32px 24px 80px;
+        display: grid;
+        gap: 24px;
+      }
+
+      h1 {
+        margin: 0;
+        font-family: 'Lora', 'Noto Sans KR', serif;
+        font-size: clamp(2.2rem, 4vw, 2.8rem);
+        letter-spacing: -0.01em;
+      }
+
+      .subtitle {
+        margin-top: 8px;
+        color: var(--text-secondary);
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        border-radius: 999px;
+        background: var(--accent);
+        color: var(--primary);
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 24px;
+        box-shadow: none;
+      }
+
+      .panel header {
+        position: static;
+        backdrop-filter: none;
+        background: transparent;
+        border: none;
+        padding: 0 0 16px;
+      }
+
+      .panel h2 {
+        margin: 0;
+        font-family: 'Lora', 'Noto Sans KR', serif;
+        font-size: 22px;
+      }
+
+      .panel p {
+        margin: 6px 0 0;
+        color: var(--text-secondary);
+      }
+
+      .grid-two {
+        display: grid;
+        gap: 24px;
+      }
+
+      @media (min-width: 960px) {
+        .grid-two {
+          grid-template-columns: 1.2fr 1fr;
+        }
+      }
+
+      .meeting-highlight {
+        border-left: 4px solid var(--accent);
+        padding-left: 16px;
+      }
+
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+        background: #f3f4f6;
+        color: var(--text-secondary);
+      }
+
+      form.roadmap {
+        display: grid;
+        gap: 16px;
+        margin-top: 16px;
+      }
+
+      label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+
+      input[type="text"],
+      select,
+      textarea {
+        width: 100%;
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        font-size: 16px;
+        background: #fff;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 2px rgba(17, 17, 17, 0.15);
+      }
+
+      textarea {
+        min-height: 120px;
+        resize: vertical;
+      }
+
+      button.primary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 12px 20px;
+        border-radius: 999px;
+        border: none;
+        font-size: 16px;
+        font-weight: 700;
+        background: var(--primary);
+        color: #fff;
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+      }
+
+      button.primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 10px 20px rgba(17, 17, 17, 0.18);
+      }
+
+      button.secondary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 16px;
+        border-radius: 999px;
+        border: 1px solid var(--border-strong);
+        background: transparent;
+        color: var(--text-main);
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .status-message {
+        margin-top: 8px;
+        font-size: 14px;
+        color: var(--text-secondary);
+      }
+
+      .status-message.success {
+        color: var(--success);
+      }
+
+      .status-message.error {
+        color: var(--danger);
+      }
+
+      .status-message.info {
+        color: var(--info);
+      }
+
+      .list {
+        margin: 16px 0 0;
+        padding: 0;
+        list-style: none;
+        display: grid;
+        gap: 12px;
+      }
+
+      .list li {
+        padding: 14px 16px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: #fff;
+      }
+
+      .list li .title {
+        font-weight: 600;
+      }
+
+      .list li .meta {
+        margin-top: 4px;
+        color: var(--text-muted);
+        font-size: 13px;
+      }
+
+      .empty {
+        color: var(--text-muted);
+      }
+
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .section-header a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      .inline-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .metrics-grid {
+        margin-top: 16px;
+        display: grid;
+        gap: 12px;
+      }
+
+      @media (min-width: 640px) {
+        .metrics-grid {
+          grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        }
+      }
+
+      .metric {
+        padding: 12px 16px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: #fff7d6;
+        font-weight: 600;
+      }
+
+      .toggle-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .toggle-row:last-child {
+        border-bottom: none;
+      }
+
+      .toggle-row strong {
+        font-size: 15px;
+      }
+
+      .toggle-row span {
+        color: var(--text-muted);
+        font-size: 13px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <nav>
+        <a href="/dashboard/index.html">← 대시보드로 돌아가기</a>
+        <div class="inline-actions">
+          <a id="briefing-link" class="secondary" href="/briefings/index.html">브리핑 화면</a>
+          <a class="secondary" href="/team/settings/index.html">팀 설정</a>
+        </div>
+      </nav>
+    </header>
+    <main>
+      <section class="panel" id="hero-panel">
+        <div class="badge">Member</div>
+        <h1 id="member-name">팀원 이름</h1>
+        <p class="subtitle" id="member-email"></p>
+        <div class="status-message info" id="page-status"></div>
+      </section>
+
+      <section class="grid-two">
+        <article class="panel" id="meeting-panel">
+          <header>
+            <h2>다가오는 1:1 일정</h2>
+            <p>캘린더 연동을 완료했다면 자동으로 최신 회의를 보여줍니다.</p>
+          </header>
+          <div class="meeting-highlight" id="meeting-detail">
+            <p class="empty">연동된 회의가 없습니다.</p>
+          </div>
+        </article>
+
+        <article class="panel" id="github-panel">
+          <header>
+            <h2>GitHub 요약</h2>
+            <p>최근 활동과 핵심 지표를 빠르게 확인하세요.</p>
+          </header>
+          <p id="github-narrative" class="empty">연동 정보를 찾지 못했습니다.</p>
+          <div class="metrics-grid" id="github-metrics"></div>
+        </article>
+      </section>
+
+      <section class="panel" id="roadmap-panel">
+        <div class="section-header">
+          <div>
+            <h2>개인 로드맵</h2>
+            <p>핵심 목표를 정리하고 진행 상태를 업데이트하세요.</p>
+          </div>
+          <span class="status-pill" id="roadmap-updated">최근 업데이트 없음</span>
+        </div>
+        <form class="roadmap" id="roadmap-form">
+          <div>
+            <label for="roadmap-title">로드맵 이름</label>
+            <input type="text" id="roadmap-title" placeholder="Personal Roadmap" />
+          </div>
+          <div>
+            <label for="roadmap-status">진행 상태</label>
+            <select id="roadmap-status">
+              <option value="DRAFT">준비 중</option>
+              <option value="IN_PROGRESS">진행 중</option>
+              <option value="DONE">완료</option>
+            </select>
+          </div>
+          <div>
+            <label for="roadmap-goals">핵심 목표 (줄바꿈으로 구분)</label>
+            <textarea id="roadmap-goals" placeholder="예) 신규 온보딩 플로우 런칭"></textarea>
+          </div>
+          <div class="inline-actions">
+            <button type="submit" class="primary" id="roadmap-save">로드맵 저장</button>
+            <button type="button" class="secondary" id="roadmap-refresh">데이터 새로고침</button>
+          </div>
+          <div class="status-message" id="roadmap-status-message"></div>
+        </form>
+      </section>
+
+      <section class="panel" id="briefing-panel">
+        <div class="section-header">
+          <div>
+            <h2>최근 1:1 브리핑</h2>
+            <p>자동 생성된 요약을 확인하고 미팅 전에 준비하세요.</p>
+          </div>
+        </div>
+        <ul class="list" id="briefing-list"></ul>
+      </section>
+
+      <section class="panel" id="notification-panel">
+        <header>
+          <h2>알림 설정</h2>
+          <p>이 멤버에게 전달되는 리마인더 채널을 확인하세요.</p>
+        </header>
+        <div class="toggle-row">
+          <div>
+            <strong>이메일 전송</strong>
+            <span id="notify-email-detail"></span>
+          </div>
+          <span class="status-pill" id="notify-email-status">확인 중</span>
+        </div>
+        <div class="toggle-row">
+          <div>
+            <strong>Slack Webhook</strong>
+            <span id="notify-slack-detail"></span>
+          </div>
+          <span class="status-pill" id="notify-slack-status">확인 중</span>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        const API_BASE = 'https://jqy68imyij.execute-api.ap-northeast-2.amazonaws.com/prod';
+        const KEY_TENANT_ID = 'teamhr.tenantId';
+        const KEY_OWNER_USER = 'teamhr.ownerUserId';
+
+        const heroName = document.getElementById('member-name');
+        const heroEmail = document.getElementById('member-email');
+        const pageStatus = document.getElementById('page-status');
+        const meetingDetail = document.getElementById('meeting-detail');
+        const roadmapForm = document.getElementById('roadmap-form');
+        const roadmapTitle = document.getElementById('roadmap-title');
+        const roadmapStatusSelect = document.getElementById('roadmap-status');
+        const roadmapGoals = document.getElementById('roadmap-goals');
+        const roadmapStatusMessage = document.getElementById('roadmap-status-message');
+        const roadmapUpdated = document.getElementById('roadmap-updated');
+        const briefingList = document.getElementById('briefing-list');
+        const briefingLink = document.getElementById('briefing-link');
+        const notifyEmailStatus = document.getElementById('notify-email-status');
+        const notifySlackStatus = document.getElementById('notify-slack-status');
+        const notifyEmailDetail = document.getElementById('notify-email-detail');
+        const notifySlackDetail = document.getElementById('notify-slack-detail');
+        const githubNarrative = document.getElementById('github-narrative');
+        const githubMetrics = document.getElementById('github-metrics');
+        const refreshBtn = document.getElementById('roadmap-refresh');
+
+        let tenantId = localStorage.getItem(KEY_TENANT_ID) || '';
+        const urlParams = new URLSearchParams(window.location.search);
+        if (!tenantId && urlParams.get('tenantId')) {
+          tenantId = urlParams.get('tenantId').trim();
+          localStorage.setItem(KEY_TENANT_ID, tenantId);
+        }
+        tenantId = tenantId || 't-demo';
+
+        const pathSegments = window.location.pathname.split('/').filter(Boolean);
+        const idxMembers = pathSegments.indexOf('members');
+        let memberId = '';
+        if (idxMembers >= 0 && pathSegments[idxMembers + 1] && pathSegments[idxMembers + 1] !== 'index.html') {
+          memberId = pathSegments[idxMembers + 1];
+        }
+        if (!memberId && urlParams.get('member')) {
+          memberId = urlParams.get('member').trim();
+        }
+        if (!memberId) {
+          const fallback = localStorage.getItem(KEY_OWNER_USER);
+          if (fallback) memberId = fallback.trim();
+        }
+        memberId = memberId || 'u-demo';
+
+        let currentRoadmap = null;
+
+        function setPageStatus(message, tone = 'info') {
+          pageStatus.textContent = message;
+          pageStatus.className = `status-message ${tone}`;
+        }
+
+        function setRoadmapStatus(message, tone = '') {
+          roadmapStatusMessage.textContent = message;
+          roadmapStatusMessage.className = tone ? `status-message ${tone}` : 'status-message';
+        }
+
+        function formatDate(value) {
+          if (!value) return '시간 정보 없음';
+          const date = new Date(value);
+          if (Number.isNaN(date.getTime())) return '시간 정보 없음';
+          return date.toLocaleString('ko-KR', {
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+          });
+        }
+
+        function splitLines(raw) {
+          if (!raw) return [];
+          return raw
+            .split(/\r?\n|;/)
+            .map((item) => item.trim())
+            .filter((item) => item.length > 0);
+        }
+
+        function renderMeeting(data) {
+          meetingDetail.innerHTML = '';
+          if (!data) {
+            const p = document.createElement('p');
+            p.className = 'empty';
+            p.textContent = '예정된 미팅을 찾지 못했습니다.';
+            meetingDetail.appendChild(p);
+            return;
+          }
+          const title = document.createElement('h3');
+          title.textContent = data.title || '1:1 Meeting';
+          const meta = document.createElement('p');
+          meta.className = 'status-pill';
+          meta.textContent = `${formatDate(data.start)} · 참석자 ${Array.isArray(data.attendees) ? data.attendees.map((a) => a.email || a).join(', ') || '미확인' : '미확인'}`;
+          const linkWrap = document.createElement('div');
+          linkWrap.style.marginTop = '12px';
+          if (data.htmlLink) {
+            const link = document.createElement('a');
+            link.href = data.htmlLink;
+            link.target = '_blank';
+            link.rel = 'noopener';
+            link.textContent = '캘린더에서 일정 확인하기';
+            link.style.fontWeight = '600';
+            linkWrap.appendChild(link);
+          }
+          meetingDetail.appendChild(title);
+          meetingDetail.appendChild(meta);
+          meetingDetail.appendChild(linkWrap);
+        }
+
+        function renderGithub(data) {
+          githubMetrics.innerHTML = '';
+          if (!data) {
+            githubNarrative.className = 'empty';
+            githubNarrative.textContent = '연동 정보를 찾지 못했습니다.';
+            return;
+          }
+          if (data.narrative) {
+            githubNarrative.className = '';
+            githubNarrative.textContent = data.narrative;
+          } else {
+            githubNarrative.className = 'empty';
+            githubNarrative.textContent = '최근 동기화된 설명이 없습니다.';
+          }
+          const metrics = data.counts || {};
+          Object.entries(metrics).forEach(([key, value]) => {
+            const box = document.createElement('div');
+            box.className = 'metric';
+            box.textContent = `${key.toUpperCase()} · ${value}`;
+            githubMetrics.appendChild(box);
+          });
+          if (githubMetrics.children.length === 0) {
+            const box = document.createElement('div');
+            box.className = 'metric';
+            box.textContent = '데이터 없음';
+            githubMetrics.appendChild(box);
+          }
+        }
+
+        function renderRoadmap(items) {
+          if (!Array.isArray(items) || items.length === 0) {
+            currentRoadmap = null;
+            roadmapTitle.value = 'Personal Roadmap';
+            roadmapStatusSelect.value = 'DRAFT';
+            roadmapGoals.value = '';
+            roadmapUpdated.textContent = '최근 업데이트 없음';
+            return;
+          }
+          currentRoadmap = items[0];
+          roadmapTitle.value = currentRoadmap.title || 'Personal Roadmap';
+          roadmapStatusSelect.value = currentRoadmap.status || 'DRAFT';
+          roadmapGoals.value = Array.isArray(currentRoadmap.goals) ? currentRoadmap.goals.join('\n') : '';
+          roadmapUpdated.textContent = currentRoadmap.updatedAt ? `업데이트: ${formatDate(currentRoadmap.updatedAt)}` : '업데이트 시간 없음';
+        }
+
+        function renderBriefings(items) {
+          briefingList.innerHTML = '';
+          if (!Array.isArray(items) || items.length === 0) {
+            const li = document.createElement('li');
+            li.className = 'empty';
+            li.textContent = '생성된 브리핑이 아직 없습니다.';
+            briefingList.appendChild(li);
+            return;
+          }
+          items.forEach((item, index) => {
+            const li = document.createElement('li');
+            const title = document.createElement('div');
+            title.className = 'title';
+            title.textContent = item.meetingTitle || item.title || `브리핑 ${index + 1}`;
+            const meta = document.createElement('div');
+            meta.className = 'meta';
+            meta.textContent = item.createdAt ? `생성: ${formatDate(item.createdAt)}` : '생성일 미확인';
+            const link = document.createElement('a');
+            link.href = `/briefings/index.html?tenantId=${encodeURIComponent(tenantId)}&userId=${encodeURIComponent(memberId)}&sk=${encodeURIComponent(item.sk || '')}`;
+            link.textContent = '브리핑 열기 →';
+            link.style.display = 'inline-block';
+            link.style.marginTop = '8px';
+            link.style.fontWeight = '600';
+            li.appendChild(title);
+            li.appendChild(meta);
+            li.appendChild(link);
+            briefingList.appendChild(li);
+          });
+        }
+
+        function renderNotifications(data) {
+          const sesEnabled = !!data?.sesEnabled;
+          const slackEnabled = !!data?.slackEnabled;
+          notifyEmailStatus.textContent = sesEnabled ? '사용 중' : '비활성';
+          notifyEmailStatus.className = `status-pill ${sesEnabled ? '' : ''}`;
+          notifyEmailDetail.textContent = data?.email ? data.email : '발송 이메일 미입력';
+          notifySlackStatus.textContent = slackEnabled ? '사용 중' : '비활성';
+          notifySlackDetail.textContent = data?.slackWebhook ? '웹훅 저장됨' : '웹훅 미입력';
+        }
+
+        async function loadMemberProfile() {
+          setPageStatus('데이터 불러오는 중...', 'info');
+          try {
+            const url = `${API_BASE}/v1/members/${encodeURIComponent(memberId)}?tenantId=${encodeURIComponent(tenantId)}&briefingLimit=5`;
+            const res = await fetch(url);
+            const data = await res.json();
+            if (!res.ok || !data.ok) {
+              throw new Error(data.error || '멤버 정보를 불러오지 못했습니다.');
+            }
+            heroName.textContent = data.profile?.displayName || memberId;
+            heroEmail.textContent = data.profile?.email || '이메일 정보 없음';
+            setPageStatus('최신 정보를 불러왔습니다.', 'success');
+            renderMeeting(data.briefings?.items?.[0]?.meeting || null);
+            renderRoadmap(data.roadmap?.items || []);
+            renderBriefings(data.briefings?.items || []);
+            renderNotifications(data.notifications);
+            renderGithub(data.github);
+            briefingLink.href = `/briefings/index.html?tenantId=${encodeURIComponent(tenantId)}&userId=${encodeURIComponent(memberId)}`;
+          } catch (err) {
+            console.error(err);
+            setPageStatus(err.message || '멤버 정보를 불러오지 못했습니다.', 'error');
+          }
+        }
+
+        roadmapForm.addEventListener('submit', async (event) => {
+          event.preventDefault();
+          setRoadmapStatus('저장 중입니다...', 'info');
+          const payload = {
+            tenantId,
+            title: roadmapTitle.value.trim(),
+            status: roadmapStatusSelect.value,
+            goals: splitLines(roadmapGoals.value),
+          };
+          if (currentRoadmap && currentRoadmap.rid) {
+            payload.rid = currentRoadmap.rid;
+            if (currentRoadmap.createdAt) payload.createdAt = currentRoadmap.createdAt;
+            if (currentRoadmap.updatedAt) payload.expectedUpdatedAt = currentRoadmap.updatedAt;
+          }
+          try {
+            const res = await fetch(`${API_BASE}/v1/members/${encodeURIComponent(memberId)}/roadmap`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload),
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok || !data.ok) {
+              throw new Error(data.error || '로드맵 저장에 실패했습니다.');
+            }
+            setRoadmapStatus('로드맵이 저장되었습니다.', 'success');
+            await loadMemberProfile();
+          } catch (err) {
+            console.error(err);
+            setRoadmapStatus(err.message || '로드맵을 저장하지 못했습니다.', 'error');
+          }
+        });
+
+        refreshBtn.addEventListener('click', () => {
+          loadMemberProfile();
+        });
+
+        loadMemberProfile();
+      })();
+    </script>
+  </body>
+</html>

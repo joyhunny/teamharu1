@@ -1,19 +1,605 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="ko">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>온보딩 이동</title>
-  </head>
-  <body style="font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; padding: 24px;">
-    <p>온보딩으로 이동 중입니다…</p>
-    <script>
-      // 정적 배포 환경에서는 /onboarding 경로가 없으므로 로그인 경유로 이동
-      window.location.replace('/login');
-    </script>
-    <noscript>
-      <p><a href="/login">로그인으로 이동</a></p>
-    </noscript>
-  </body>
-  </html>
+    <title>TeamHaRu 온보딩</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@500&family=Raleway:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <style>
+      :root {
+        /* Color Palette based on Design Guideline */
+        --primary-yellow: #FFD84D;
+        --rich-black: #111111;
+        --text-main: #111111;
+        --text-secondary: #4B5563;
+        --text-tertiary: #9CA3AF;
+        --neutral-white: #FFFFFF;
+        --neutral-bg: #FAFAF9;
+        --neutral-border: #E5E7EB;
+        --neutral-hover: #F2F2F2;
+        --system-error: #EF4444;
+        --system-info: #0EA5E9;
+        --system-success: #22C55E;
 
+        color-scheme: light;
+      }
+      body {
+        margin: 0;
+        padding: 32px 16px 64px;
+        font-family: 'Raleway', 'Noto Sans KR', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+        font-size: 18px;
+        line-height: 1.6;
+        background: var(--neutral-bg);
+        color: var(--text-main);
+      }
+      main {
+        max-width: 960px;
+        margin: 0 auto;
+      }
+      h1 {
+        margin: 0;
+        font-size: clamp(2.5rem, 5vw, 3rem); /* H3-H2 range */
+        font-family: 'Lora', 'Noto Sans KR', serif;
+        font-weight: 500;
+        line-height: 1.2;
+        letter-spacing: -0.01em;
+      }
+      h2 {
+        font-size: 28px; /* H4 */
+        font-family: 'Lora', 'Noto Sans KR', serif;
+        font-weight: 500;
+        line-height: 1.3;
+      }
+      p.lead {
+        margin: 12px 0 0;
+        color: var(--text-secondary);
+      }
+      section.card {
+        background: var(--neutral-white);
+        border-radius: 16px;
+        padding: 24px;
+        margin-top: 24px;
+        border: 1px solid var(--neutral-border);
+        box-shadow: none;
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        background: var(--primary-yellow);
+        color: var(--rich-black);
+        margin-bottom: 16px;
+      }
+      .meta-grid {
+        display: grid;
+        gap: 12px;
+      }
+      @media (min-width: 680px) {
+        .meta-grid {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+      }
+      .meta-item {
+        background: var(--neutral-hover);
+        border-radius: 12px;
+        padding: 14px 16px;
+        font-size: 14px;
+      }
+      label {
+        display: block;
+        font-weight: 700;
+        margin-bottom: 6px;
+        font-size: 16px;
+      }
+      input[type="text"],
+      input[type="email"],
+      textarea {
+        width: 100%;
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid var(--neutral-border);
+        font-size: 16px;
+        background: var(--neutral-white);
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      }
+      input:focus,
+      textarea:focus {
+        outline: none;
+        border-color: var(--rich-black);
+        box-shadow: 0 0 0 2px rgba(17, 17, 17, 0.2);
+      }
+      textarea {
+        min-height: 96px;
+        resize: vertical;
+      }
+      button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 0 28px;
+        height: 56px;
+        border-radius: 999px;
+        border: 1px solid transparent;
+        font-weight: 700;
+        font-size: 16px;
+        cursor: pointer;
+        background: var(--rich-black);
+        color: var(--neutral-white);
+        transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      button.secondary {
+        background: transparent;
+        color: var(--rich-black);
+        border-color: var(--rich-black);
+      }
+      button.link {
+        background: transparent;
+        color: var(--text-secondary);
+        border: none;
+        padding: 4px 0;
+        height: auto;
+      }
+      button:hover {
+        transform: translateY(-1px);
+        background: #333;
+      }
+      button.secondary:hover {
+        background: var(--neutral-hover);
+        transform: translateY(-1px);
+      }
+      button.link:hover {
+        text-decoration: underline;
+        color: var(--rich-black);
+        background: transparent;
+        transform: none;
+      }
+      .button-row {
+        margin-top: 8px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+      }
+      .status {
+        margin-top: 12px;
+        font-size: 14px;
+        color: var(--text-secondary);
+      }
+      .status.info {
+        color: var(--system-info);
+      }
+      .status.success {
+        color: var(--system-success);
+      }
+      .status.error {
+        color: var(--system-error);
+      }
+      ul.list {
+        margin: 0;
+        padding-left: 18px;
+        color: var(--text-secondary);
+      }
+      .hidden {
+        display: none !important;
+      }
+      .integration-grid {
+        display: grid;
+        gap: 16px;
+      }
+      @media (min-width: 720px) {
+        .integration-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+      .integration-card {
+        border: 1px solid var(--neutral-border);
+        border-radius: 16px;
+        padding: 18px;
+        background: var(--neutral-white);
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .integration-status {
+        font-weight: 600;
+        font-size: 14px;
+      }
+      .integration-status.connected {
+        color: var(--system-success);
+      }
+      .integration-status.pending {
+        color: var(--text-secondary);
+      }
+      .integration-status.error {
+        color: var(--system-error);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section>
+        <div class="badge">Onboarding</div>
+        <h1>팀 온보딩 진행을 마무리해 볼까요?</h1>
+        <p class="lead">테넌트 정보를 확인하고 프로필을 저장한 뒤, GitHub·캘린더 연동을 연결하면 TeamHaRu 대시보드를 바로 사용할 수 있습니다.</p>
+      </section>
+
+      <section id="missing-tenant" class="card hidden">
+        <h2>Tenant ID가 필요합니다</h2>
+        <p class="lead">초대 링크 또는 팀 생성 단계에서 전달받은 Tenant ID를 주소창 `?tenantId=` 파라미터로 전달하거나, 아래 입력란에 직접 저장해 주세요.</p>
+        <form id="tenant-form" style="margin-top:16px; display:flex; gap:12px; flex-wrap:wrap;">
+          <input id="tenant-input" type="text" placeholder="예: acme-core" required style="flex:1 1 240px;" />
+          <button type="submit">Tenant 저장</button>
+        </form>
+        <p class="status" id="tenant-form-status"></p>
+      </section>
+
+      <section id="summary-card" class="card hidden">
+        <div class="badge">1. 기본 정보</div>
+        <h2>팀 요약</h2>
+        <div class="meta-grid">
+          <div class="meta-item">Tenant ID<br /><strong id="tenant-id">-</strong></div>
+          <div class="meta-item">대표 이메일<br /><strong id="owner-email">-</strong></div>
+          <div class="meta-item">대표 사용자 ID<br /><strong id="owner-user">-</strong></div>
+        </div>
+      </section>
+
+      <section id="profile-card" class="card hidden">
+        <div class="badge">2. 팀 프로필</div>
+        <h2>팀 목표와 핵심 지표를 저장하세요</h2>
+        <form id="profile-form" style="margin-top:16px; display:grid; gap:16px;">
+          <div>
+            <label for="mission">팀 미션</label>
+            <textarea id="mission" placeholder="예: 개발자 1:1 미팅 시간을 10분으로 단축합니다."></textarea>
+          </div>
+          <div>
+            <label for="metric">주요 성과 지표</label>
+            <input id="metric" type="text" placeholder="예: 1:1 준비 시간 10분 이내" />
+          </div>
+          <div>
+            <label for="okr">핵심 목표 (줄바꿈 또는 콤마 구분)</label>
+            <textarea id="okr" placeholder="A 팀 온보딩 30분 내 완료&#10;GitHub 리뷰 SLA 24시간 유지"></textarea>
+          </div>
+          <div>
+            <label for="stack">주요 기술 스택</label>
+            <textarea id="stack" placeholder="React&#10;Node.js&#10;Terraform"></textarea>
+          </div>
+          <div class="button-row">
+            <button type="submit">프로필 저장</button>
+            <button type="button" class="secondary" id="go-dashboard">대시보드로 이동</button>
+          </div>
+          <p class="status" id="profile-status"></p>
+        </form>
+      </section>
+
+      <section id="integration-card" class="card hidden">
+        <div class="badge">3. 필수 연동</div>
+        <h2>GitHub · 캘린더 연결</h2>
+        <div class="integration-grid">
+          <div class="integration-card">
+            <div>
+              <strong>GitHub 요약</strong>
+              <p class="status" id="github-status">상태 확인 중…</p>
+              <p class="status" id="github-detail"></p>
+            </div>
+            <div class="button-row">
+              <button type="button" id="github-connect">GitHub 연결</button>
+              <button type="button" class="secondary" id="github-refresh">상태 새로고침</button>
+            </div>
+          </div>
+
+          <div class="integration-card">
+            <div>
+              <strong>Google Calendar</strong>
+              <p class="status" id="calendar-status">토큰을 입력해 주세요.</p>
+              <p class="status" id="calendar-detail"></p>
+            </div>
+            <label for="calendar-token">Access Token (데모용)</label>
+            <input id="calendar-token" type="text" placeholder="ya29.a0AW..." />
+            <div class="button-row">
+              <button type="button" id="calendar-save" style="height:44px; padding:0 20px;">토큰 저장</button>
+              <button type="button" class="secondary" id="calendar-preview" style="height:44px; padding:0 20px;">미리보기</button>
+              <button type="button" class="link" id="calendar-clear">삭제</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="next-card" class="card hidden">
+        <div class="badge">Next</div>
+        <h2>다음 단계</h2>
+        <ul class="list">
+          <li>모든 연동이 완료되면 <strong>대시보드</strong>에서 GitHub/캘린더 요약을 확인해 보세요.</li>
+          <li>팀원을 초대한 경우, 초대 이메일의 매직 링크로 로그인하면 같은 테넌트로 연결됩니다.</li>
+          <li>문제가 발생하면 Slack #teamharu-support 채널 또는 support@teamharu.ai 로 문의 주세요.</li>
+        </ul>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        const API_BASE = 'https://jqy68imyij.execute-api.ap-northeast-2.amazonaws.com/prod';
+        const KEY_TENANT_ID = 'teamhr.tenantId';
+        const KEY_OWNER_EMAIL = 'teamhr.ownerEmail';
+        const KEY_OWNER_USER = 'teamhr.ownerUserId';
+        const KEY_CALENDAR_TOKEN = 'teamhr.calendarToken';
+
+        const tenantForm = document.getElementById('tenant-form');
+        const tenantInput = document.getElementById('tenant-input');
+        const tenantFormStatus = document.getElementById('tenant-form-status');
+
+        const missingTenant = document.getElementById('missing-tenant');
+        const summaryCard = document.getElementById('summary-card');
+        const profileCard = document.getElementById('profile-card');
+        const integrationCard = document.getElementById('integration-card');
+        const nextCard = document.getElementById('next-card');
+
+        const tenantIdEl = document.getElementById('tenant-id');
+        const ownerEmailEl = document.getElementById('owner-email');
+        const ownerUserEl = document.getElementById('owner-user');
+
+        const missionInput = document.getElementById('mission');
+        const metricInput = document.getElementById('metric');
+        const okrInput = document.getElementById('okr');
+        const stackInput = document.getElementById('stack');
+        const profileStatus = document.getElementById('profile-status');
+        const profileForm = document.getElementById('profile-form');
+
+        const githubStatusEl = document.getElementById('github-status');
+        const githubDetail = document.getElementById('github-detail');
+        const githubConnectBtn = document.getElementById('github-connect');
+        const githubRefreshBtn = document.getElementById('github-refresh');
+
+        const calendarStatusEl = document.getElementById('calendar-status');
+        const calendarDetail = document.getElementById('calendar-detail');
+        const calendarTokenInput = document.getElementById('calendar-token');
+        const calendarSaveBtn = document.getElementById('calendar-save');
+        const calendarPreviewBtn = document.getElementById('calendar-preview');
+        const calendarClearBtn = document.getElementById('calendar-clear');
+        const goDashboardBtn = document.getElementById('go-dashboard');
+
+        let tenantId = localStorage.getItem(KEY_TENANT_ID) || '';
+        let ownerEmail = localStorage.getItem(KEY_OWNER_EMAIL) || '';
+        let ownerUserId = localStorage.getItem(KEY_OWNER_USER) || '';
+
+        function setStatus(el, message, tone) {
+          if (!el) return;
+          el.textContent = message;
+          el.classList.remove('info', 'success', 'error');
+          if (tone) {
+            el.classList.add(tone);
+          }
+        }
+
+        function show(el) {
+          el?.classList.remove('hidden');
+        }
+
+        function hide(el) {
+          el?.classList.add('hidden');
+        }
+
+        function getQueryParam(name) {
+          const params = new URLSearchParams(window.location.search);
+          return params.get(name);
+        }
+
+        const tenantParam = getQueryParam('tenantId') || getQueryParam('t');
+        if (!tenantId && tenantParam) {
+          tenantId = tenantParam.trim();
+          if (tenantId) localStorage.setItem(KEY_TENANT_ID, tenantId);
+        }
+
+        const emailParam = getQueryParam('email');
+        if (!ownerEmail && emailParam) {
+          ownerEmail = emailParam.trim();
+          if (ownerEmail) localStorage.setItem(KEY_OWNER_EMAIL, ownerEmail);
+        }
+
+        const userParam = getQueryParam('userId');
+        if (!ownerUserId && userParam) {
+          ownerUserId = userParam.trim();
+          if (ownerUserId) localStorage.setItem(KEY_OWNER_USER, ownerUserId);
+        }
+
+        const savedCalendarToken = localStorage.getItem(KEY_CALENDAR_TOKEN) || '';
+        if (savedCalendarToken && calendarTokenInput) {
+          calendarTokenInput.value = savedCalendarToken;
+        }
+
+        if (!tenantId) {
+          show(missingTenant);
+          setStatus(tenantFormStatus, 'Tenant ID를 입력하거나 초대 링크의 파라미터를 사용해 주세요.', 'info');
+          tenantForm?.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const value = tenantInput?.value.trim();
+            if (!value) {
+              setStatus(tenantFormStatus, 'Tenant ID를 입력해 주세요.', 'error');
+              return;
+            }
+            tenantId = value;
+            localStorage.setItem(KEY_TENANT_ID, tenantId);
+            setStatus(tenantFormStatus, 'Tenant ID가 저장되었습니다. 페이지를 새로고침합니다.', 'success');
+            setTimeout(() => window.location.reload(), 600);
+          });
+          return;
+        }
+
+        hide(missingTenant);
+        show(summaryCard);
+        show(profileCard);
+        show(integrationCard);
+        show(nextCard);
+
+        tenantIdEl.textContent = tenantId;
+        ownerEmailEl.textContent = ownerEmail || '-';
+        ownerUserEl.textContent = ownerUserId || '-';
+
+        async function loadTeamProfile() {
+          try {
+            const res = await fetch(`${API_BASE}/v1/teams/${encodeURIComponent(tenantId)}`);
+            if (!res.ok) {
+              throw new Error('팀 정보를 불러오지 못했습니다. Tenant ID를 다시 확인해 주세요.');
+            }
+            const data = await res.json();
+            if (!data?.team) return;
+            if (missionInput) missionInput.value = data.team.mission || '';
+            if (metricInput) metricInput.value = data.team.primaryMetric || '';
+            if (Array.isArray(data.team.goals) && data.team.goals.length && okrInput) {
+              okrInput.value = data.team.goals.join('\n');
+            }
+            if (Array.isArray(data.team.techStack) && data.team.techStack.length && stackInput) {
+              stackInput.value = data.team.techStack.join('\n');
+            }
+          } catch (err) {
+            console.warn(err);
+            setStatus(profileStatus, err.message || '팀 정보를 불러오지 못했습니다.', 'error');
+          }
+        }
+
+        async function saveProfile(event) {
+          event.preventDefault();
+          setStatus(profileStatus, '저장 중입니다…', 'info');
+          const payload = {
+            mission: missionInput ? missionInput.value.trim() : '',
+            primaryMetric: metricInput ? metricInput.value.trim() : '',
+            goals: okrInput ? splitLines(okrInput.value) : [],
+            techStack: stackInput ? splitLines(stackInput.value) : [],
+            onboardingStage: 'profile',
+          };
+          try {
+            const res = await fetch(`${API_BASE}/v1/teams/${encodeURIComponent(tenantId)}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload),
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok || !data.ok) {
+              throw new Error(data.error || '저장에 실패했습니다. 잠시 후 다시 시도해 주세요.');
+            }
+            setStatus(profileStatus, '팀 프로필이 저장되었습니다.', 'success');
+          } catch (err) {
+            console.error(err);
+            setStatus(profileStatus, err.message || '저장 중 오류가 발생했습니다.', 'error');
+          }
+        }
+
+        function githubConnect() {
+          const userHint = ownerUserId || ownerEmail || 'owner';
+          const url = `${API_BASE}/oauth/github/start?tenantId=${encodeURIComponent(tenantId)}&userId=${encodeURIComponent(userHint)}`;
+          window.open(url, '_blank', 'noopener');
+        }
+
+        async function refreshGithub() {
+          githubStatusEl.textContent = 'GitHub 연결 상태 확인 중…';
+          githubStatusEl.className = 'integration-status pending';
+          githubDetail.textContent = '';
+          const userHint = ownerUserId || ownerEmail || 'owner';
+          try {
+            const res = await fetch(`${API_BASE}/github/summary?tenantId=${encodeURIComponent(tenantId)}&userId=${encodeURIComponent(userHint)}&limit=1`);
+            if (!res.ok) {
+              throw new Error('데이터를 확인하지 못했습니다. OAuth 승인 후 1분 뒤 다시 시도해 주세요.');
+            }
+            const data = await res.json();
+            const count = Array.isArray(data?.items) ? data.items.length : 0;
+            if (count > 0) {
+              githubStatusEl.textContent = 'Connected';
+              githubStatusEl.className = 'integration-status connected';
+              githubDetail.textContent = '최근 활동 요약이 저장되었습니다.';
+            } else {
+              githubStatusEl.textContent = 'Waiting for first sync';
+              githubStatusEl.className = 'integration-status pending';
+              githubDetail.textContent = 'OAuth 승인 후 GitHub 수집 함수를 실행하면 활동이 쌓입니다.';
+            }
+          } catch (err) {
+            githubStatusEl.textContent = '연결 필요';
+            githubStatusEl.className = 'integration-status error';
+            githubDetail.textContent = err.message || '연결 여부를 확인하지 못했습니다.';
+          }
+        }
+
+        function saveCalendarToken() {
+          const token = calendarTokenInput ? calendarTokenInput.value.trim() : '';
+          if (!token) {
+            setStatus(calendarDetail, '토큰을 입력해 주세요.', 'error');
+            return;
+          }
+          localStorage.setItem(KEY_CALENDAR_TOKEN, token);
+          setStatus(calendarDetail, '토큰이 저장되었습니다. 미리보기를 눌러 확인해 보세요.', 'info');
+          calendarStatusEl.textContent = '토큰 저장됨';
+          calendarStatusEl.className = 'integration-status pending';
+        }
+
+        function clearCalendarToken() {
+          localStorage.removeItem(KEY_CALENDAR_TOKEN);
+          if (calendarTokenInput) {
+            calendarTokenInput.value = '';
+          }
+          setStatus(calendarDetail, '저장된 토큰을 삭제했습니다.', 'info');
+          calendarStatusEl.textContent = '연결 필요';
+          calendarStatusEl.className = 'integration-status pending';
+        }
+
+        async function previewCalendar() {
+          const token = calendarTokenInput ? calendarTokenInput.value.trim() : '';
+          if (!token) {
+            setStatus(calendarDetail, '먼저 access token을 입력해 주세요.', 'error');
+            return;
+          }
+          setStatus(calendarDetail, 'Google Calendar에서 데이터를 불러오는 중입니다…', 'info');
+          try {
+            const res = await fetch(`${API_BASE}/calendar/meetings?tenantId=${encodeURIComponent(tenantId)}&access_token=${encodeURIComponent(token)}`);
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok || !data.ok) {
+              throw new Error(data.error || 'API 호출에 실패했습니다.');
+            }
+            const upcoming = Array.isArray(data.next90m) ? data.next90m.length : 0;
+            calendarStatusEl.textContent = 'Connected';
+            calendarStatusEl.className = 'integration-status connected';
+            setStatus(calendarDetail, `다음 90분 이내 ${upcoming}건, 24시간 이내 ${Array.isArray(data.upcoming24h) ? data.upcoming24h.length : 0}건을 감지했습니다.`, 'success');
+          } catch (err) {
+            calendarStatusEl.textContent = '연결 필요';
+            calendarStatusEl.className = 'integration-status error';
+            setStatus(calendarDetail, err.message || '데이터를 불러오지 못했습니다.', 'error');
+          }
+        }
+
+        function goToDashboard() {
+          window.location.href = '/dashboard/index.html';
+        }
+
+        function splitLines(value) {
+          if (!value) return [];
+          return value
+            .split(/\r?\n|,/)
+            .map((item) => item.trim())
+            .filter((item) => item.length > 0);
+        }
+
+        profileForm?.addEventListener('submit', saveProfile);
+        githubConnectBtn?.addEventListener('click', githubConnect);
+        githubRefreshBtn?.addEventListener('click', refreshGithub);
+        calendarSaveBtn?.addEventListener('click', saveCalendarToken);
+        calendarPreviewBtn?.addEventListener('click', previewCalendar);
+        calendarClearBtn?.addEventListener('click', clearCalendarToken);
+        goDashboardBtn?.addEventListener('click', goToDashboard);
+
+        loadTeamProfile();
+        refreshGithub();
+        if (savedCalendarToken) {
+          calendarStatusEl.textContent = '토큰 저장됨';
+          calendarStatusEl.className = 'integration-status pending';
+        }
+      })();
+    </script>
+  </body>
+</html>

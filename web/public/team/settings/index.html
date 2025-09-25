@@ -1,0 +1,474 @@
+﻿<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TeamHaRu 팀 설정</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@500&family=Raleway:wght@400;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <style>
+      :root {
+        --bg: #f5f5f1;
+        --panel: #ffffff;
+        --border: #e5e7eb;
+        --text-main: #111827;
+        --text-secondary: #4b5563;
+        --accent: #facc15;
+        --danger: #ef4444;
+        --success: #22c55e;
+        --info: #0ea5e9;
+        color-scheme: light;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        font-family: 'Raleway', 'Noto Sans KR', system-ui, -apple-system, 'Segoe UI', sans-serif;
+        color: var(--text-main);
+      }
+
+      header {
+        position: sticky;
+        top: 0;
+        backdrop-filter: blur(12px);
+        background: rgba(245, 245, 241, 0.92);
+        border-bottom: 1px solid var(--border);
+        z-index: 10;
+      }
+
+      header nav {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 18px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+      }
+
+      header nav a {
+        color: var(--text-main);
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      main {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 32px 24px 80px;
+        display: grid;
+        gap: 24px;
+      }
+
+      h1 {
+        margin: 0;
+        font-family: 'Lora', 'Noto Sans KR', serif;
+        font-size: clamp(2.3rem, 4vw, 3rem);
+        letter-spacing: -0.015em;
+      }
+
+      h2 {
+        margin: 0;
+        font-family: 'Lora', 'Noto Sans KR', serif;
+        font-size: 22px;
+      }
+
+      p.lead {
+        margin: 12px 0 0;
+        color: var(--text-secondary);
+      }
+
+      .panel {
+        background: var(--panel);
+        border-radius: 20px;
+        border: 1px solid var(--border);
+        padding: 28px 26px;
+      }
+
+      .panel + .panel {
+        margin-top: 8px;
+      }
+
+      form {
+        margin-top: 20px;
+        display: grid;
+        gap: 18px;
+      }
+
+      label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+
+      input[type="text"],
+      input[type="email"],
+      textarea,
+      select {
+        width: 100%;
+        padding: 11px 14px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: #fff;
+        font-size: 16px;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      input:focus,
+      textarea:focus,
+      select:focus {
+        outline: none;
+        border-color: var(--text-main);
+        box-shadow: 0 0 0 2px rgba(17, 24, 39, 0.12);
+      }
+
+      textarea {
+        min-height: 110px;
+        resize: vertical;
+      }
+
+      .fieldset {
+        display: grid;
+        gap: 12px;
+      }
+
+      .inline {
+        display: grid;
+        gap: 16px;
+      }
+
+      @media (min-width: 720px) {
+        .inline.two {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      .toggle {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .toggle input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+      }
+
+      .actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      button.primary {
+        padding: 12px 22px;
+        border-radius: 999px;
+        border: none;
+        background: var(--text-main);
+        color: #fff;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+      }
+
+      button.primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 12px 24px rgba(17, 24, 39, 0.18);
+      }
+
+      button.secondary {
+        padding: 11px 18px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: transparent;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .status-message {
+        font-size: 14px;
+        color: var(--text-secondary);
+      }
+
+      .status-message.success { color: var(--success); }
+      .status-message.error { color: var(--danger); }
+      .status-message.info { color: var(--info); }
+
+      .note {
+        font-size: 13px;
+        color: var(--text-secondary);
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <nav>
+        <a href="/dashboard/index.html">← 대시보드</a>
+        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+          <a href="/members/index.html" class="secondary">멤버 프로필</a>
+          <a href="/onboarding/index.html" class="secondary">온보딩 체크리스트</a>
+        </div>
+      </nav>
+    </header>
+    <main>
+      <section class="panel">
+        <h1>팀 미션 & OKR</h1>
+        <p class="lead">팀의 방향성을 명확히 기록하고, 온보딩 대시보드와 1:1 브리핑에 동일하게 노출됩니다.</p>
+        <form id="team-form">
+          <div>
+            <label for="mission">팀 미션</label>
+            <textarea id="mission" placeholder="예) 팀원과 회사가 함께 성장하는 문화를 만듭니다."></textarea>
+          </div>
+          <div class="inline two">
+            <div>
+              <label for="primary-metric">핵심 지표</label>
+              <input type="text" id="primary-metric" placeholder="예) 온보딩 완료율 90%" />
+            </div>
+            <div>
+              <label for="headline">한 줄 소개</label>
+              <input type="text" id="headline" placeholder="예) 성장하는 스타트업 팀" />
+            </div>
+          </div>
+          <div class="inline two">
+            <div>
+              <label for="goals">이번 분기 목표 (줄바꿈으로 구분)</label>
+              <textarea id="goals" placeholder="1. 신규 온보딩 완료
+2. 1:1 미팅 구조 확립"></textarea>
+            </div>
+            <div>
+              <label for="tech-stack">주요 사용 기술 (줄바꿈)</label>
+              <textarea id="tech-stack" placeholder="React
+TypeScript
+AWS"></textarea>
+            </div>
+          </div>
+          <div class="inline two">
+            <div>
+              <label for="onboarding-stage">온보딩 단계</label>
+              <select id="onboarding-stage">
+                <option value="">선택</option>
+                <option value="DISCOVERY">DISCOVERY</option>
+                <option value="SETUP">SETUP</option>
+                <option value="BRIEFING">BRIEFING</option>
+                <option value="LIVE">LIVE</option>
+              </select>
+            </div>
+            <div class="toggle">
+              <input type="checkbox" id="onboarding-completed" />
+              <label for="onboarding-completed" style="margin:0;">팀 온보딩 완료</label>
+            </div>
+          </div>
+          <div class="actions">
+            <button type="submit" class="primary">팀 설정 저장</button>
+            <button type="button" class="secondary" id="team-refresh">새로고침</button>
+          </div>
+          <div class="status-message" id="team-status"></div>
+        </form>
+      </section>
+
+      <section class="panel">
+        <h2>알림 채널 관리</h2>
+        <p class="lead">1:1 브리핑과 리마인더를 받을 채널을 설정합니다.</p>
+        <form id="notify-form">
+          <div class="toggle">
+            <input type="checkbox" id="notify-email" />
+            <label for="notify-email" style="margin:0;">이메일 알림 사용</label>
+          </div>
+          <div>
+            <label for="notify-email-address">알림 이메일</label>
+            <input type="email" id="notify-email-address" placeholder="name@example.com" />
+          </div>
+          <div class="toggle">
+            <input type="checkbox" id="notify-slack" />
+            <label for="notify-slack" style="margin:0;">Slack Webhook 사용</label>
+          </div>
+          <div>
+            <label for="notify-slack-webhook">Slack Webhook URL</label>
+            <input type="text" id="notify-slack-webhook" placeholder="https://hooks.slack.com/services/..." />
+            <p class="note">웹훅 URL을 입력하면 새 브리핑 알림을 슬랙으로 보낼 수 있습니다.</p>
+          </div>
+          <div class="actions">
+            <button type="submit" class="primary">알림 설정 저장</button>
+          </div>
+          <div class="status-message" id="notify-status"></div>
+        </form>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        const API_BASE = 'https://jqy68imyij.execute-api.ap-northeast-2.amazonaws.com/prod';
+        const KEY_TENANT_ID = 'teamhr.tenantId';
+        const KEY_OWNER_USER = 'teamhr.ownerUserId';
+        const KEY_OWNER_EMAIL = 'teamhr.ownerEmail';
+
+        const missionInput = document.getElementById('mission');
+        const metricInput = document.getElementById('primary-metric');
+        const headlineInput = document.getElementById('headline');
+        const goalsInput = document.getElementById('goals');
+        const techStackInput = document.getElementById('tech-stack');
+        const onboardingStageSelect = document.getElementById('onboarding-stage');
+        const onboardingCompletedCheck = document.getElementById('onboarding-completed');
+        const teamForm = document.getElementById('team-form');
+        const teamStatus = document.getElementById('team-status');
+        const refreshBtn = document.getElementById('team-refresh');
+
+        const notifyForm = document.getElementById('notify-form');
+        const notifyEmailCheck = document.getElementById('notify-email');
+        const notifyEmailInput = document.getElementById('notify-email-address');
+        const notifySlackCheck = document.getElementById('notify-slack');
+        const notifySlackInput = document.getElementById('notify-slack-webhook');
+        const notifyStatus = document.getElementById('notify-status');
+
+        let tenantId = localStorage.getItem(KEY_TENANT_ID) || '';
+        const params = new URLSearchParams(window.location.search);
+        if (!tenantId && params.get('tenantId')) {
+          tenantId = params.get('tenantId').trim();
+          localStorage.setItem(KEY_TENANT_ID, tenantId);
+        }
+        tenantId = tenantId || 't-demo';
+
+        let ownerUser = localStorage.getItem(KEY_OWNER_USER) || '';
+        if (!ownerUser && params.get('userId')) {
+          ownerUser = params.get('userId').trim();
+          localStorage.setItem(KEY_OWNER_USER, ownerUser);
+        }
+        ownerUser = ownerUser || 'u-demo';
+
+        const ownerEmail = localStorage.getItem(KEY_OWNER_EMAIL) || '';
+        if (ownerEmail && !notifyEmailInput.value) {
+          notifyEmailInput.value = ownerEmail;
+        }
+
+        function setTeamStatus(message, tone = '') {
+          teamStatus.textContent = message;
+          teamStatus.className = tone ? `status-message ${tone}` : 'status-message';
+        }
+
+        function setNotifyStatus(message, tone = '') {
+          notifyStatus.textContent = message;
+          notifyStatus.className = tone ? `status-message ${tone}` : 'status-message';
+        }
+
+        function joinLines(list) {
+          return Array.isArray(list) ? list.join('\n') : '';
+        }
+
+        function splitLines(raw) {
+          if (!raw) return [];
+          return raw
+            .split(/\r?\n|;/)
+            .map((item) => item.trim())
+            .filter((item) => item.length > 0);
+        }
+
+        async function loadSettings() {
+          setTeamStatus('팀 정보를 불러오는 중입니다...', 'info');
+          setNotifyStatus('알림 정보를 불러오는 중입니다...', 'info');
+          try {
+            const url = `${API_BASE}/v1/team/settings?tenantId=${encodeURIComponent(tenantId)}&userId=${encodeURIComponent(ownerUser)}`;
+            const res = await fetch(url);
+            const data = await res.json();
+            if (!res.ok || !data.ok) {
+              throw new Error(data.error || '팀 설정을 불러오지 못했습니다.');
+            }
+            const settings = data.settings || {};
+            missionInput.value = settings.mission || '';
+            metricInput.value = settings.primaryMetric || '';
+            headlineInput.value = settings.headline || '';
+            goalsInput.value = joinLines(settings.goals);
+            techStackInput.value = joinLines(settings.techStack);
+            onboardingStageSelect.value = settings.onboardingStage || '';
+            onboardingCompletedCheck.checked = !!settings.onboardingCompleted;
+            setTeamStatus('팀 정보가 최신 상태입니다.', 'success');
+
+            const notify = data.notifications || {};
+            notifyEmailCheck.checked = !!notify.sesEnabled;
+            notifyEmailInput.value = notify.email || ownerEmail || '';
+            notifySlackCheck.checked = !!notify.slackEnabled;
+            notifySlackInput.value = notify.slackWebhook || '';
+            setNotifyStatus('알림 설정이 최신 상태입니다.', 'success');
+          } catch (err) {
+            console.error(err);
+            setTeamStatus(err.message || '팀 정보 로딩 실패', 'error');
+            setNotifyStatus(err.message || '알림 설정 로딩 실패', 'error');
+          }
+        }
+
+        teamForm.addEventListener('submit', async (event) => {
+          event.preventDefault();
+          setTeamStatus('저장 중입니다...', 'info');
+          try {
+            const payload = {
+              tenantId,
+              mission: missionInput.value.trim(),
+              primaryMetric: metricInput.value.trim(),
+              headline: headlineInput.value.trim(),
+              goals: splitLines(goalsInput.value),
+              techStack: splitLines(techStackInput.value),
+              onboardingStage: onboardingStageSelect.value || null,
+              onboardingCompleted: onboardingCompletedCheck.checked,
+            };
+            const res = await fetch(`${API_BASE}/v1/team/settings`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload),
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok || !data.ok) {
+              throw new Error(data.error || '팀 설정 저장에 실패했습니다.');
+            }
+            setTeamStatus('팀 설정이 저장되었습니다.', 'success');
+          } catch (err) {
+            console.error(err);
+            setTeamStatus(err.message || '팀 설정 저장 실패', 'error');
+          }
+        });
+
+        notifyForm.addEventListener('submit', async (event) => {
+          event.preventDefault();
+          setNotifyStatus('저장 중입니다...', 'info');
+          try {
+            const payload = {
+              tenantId,
+              notifications: {
+                userId: ownerUser,
+                sesEnabled: notifyEmailCheck.checked,
+                email: notifyEmailInput.value.trim(),
+                slackEnabled: notifySlackCheck.checked,
+                slackWebhook: notifySlackInput.value.trim(),
+              },
+            };
+            const res = await fetch(`${API_BASE}/v1/team/settings`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload),
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok || !data.ok) {
+              throw new Error(data.error || '알림 설정 저장에 실패했습니다.');
+            }
+            setNotifyStatus('알림 설정이 저장되었습니다.', 'success');
+          } catch (err) {
+            console.error(err);
+            setNotifyStatus(err.message || '알림 설정 저장 실패', 'error');
+          }
+        });
+
+        refreshBtn.addEventListener('click', () => {
+          loadSettings();
+        });
+
+        loadSettings();
+      })();
+    </script>
+  </body>
+</html>

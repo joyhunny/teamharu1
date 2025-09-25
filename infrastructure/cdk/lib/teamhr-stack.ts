@@ -190,6 +190,7 @@ export class TeamHRStack extends Stack {
       deploy: false, // we'll control stage for naming
       restApiName: `${resourcePrefix}-api`,
     });
+    const v1 = api.root.getResource('v1') ?? api.root.addResource('v1');
     const health = api.root.addResource('health');
     health.addMethod('GET', new LambdaIntegration(healthFn));
 
@@ -211,6 +212,24 @@ export class TeamHRStack extends Stack {
 
     const tenant = api.root.addResource('tenant');
     tenant.addMethod('POST', new LambdaIntegration(tenantFn));
+
+    const teams = v1.addResource('teams');
+    teams.addMethod('POST', new LambdaIntegration(tenantFn));
+    teams.addCorsPreflight({
+      allowOrigins: ['*'],
+      allowMethods: ['OPTIONS', 'POST'],
+      allowHeaders: ['Content-Type', 'Authorization'],
+    });
+
+    const teamById = teams.addResource('{tenantId}');
+    teamById.addMethod('GET', new LambdaIntegration(tenantFn));
+    teamById.addMethod('PUT', new LambdaIntegration(tenantFn));
+    teamById.addCorsPreflight({
+      allowOrigins: ['*'],
+      allowMethods: ['OPTIONS', 'GET', 'PUT'],
+      allowHeaders: ['Content-Type', 'Authorization'],
+    });
+
 
     // D3: Invite Lambda and API (POST /invite, GET /invite/{token})
     const frontendUrl = `https://${distribution.distributionDomainName}`;
@@ -289,6 +308,33 @@ export class TeamHRStack extends Stack {
       bundling: { externalModules: ['aws-sdk', '@aws-sdk/*'] },
     });
 
+
+    // D7: Dashboard summary (v1/dashboard/summary)
+    const dashboardFn = new NodejsFunction(this, 'DashboardFunction', {
+      entry: path.resolve(__dirname, '../../..', 'services/dashboard-lambda/src/index.ts'),
+      handler: 'handler',
+      runtime: Runtime.NODEJS_18_X,
+      memorySize: 256,
+      timeout: Duration.seconds(15),
+      tracing: Tracing.ACTIVE,
+      functionName: `${resourcePrefix}-${Stack.of(this).stackName.toLowerCase()}-dashboard`,
+      environment: {
+        TABLE_NAME: table.tableName,
+        DEFAULT_TENANT: process.env.DEFAULT_TENANT ?? 't-demo',
+        DEFAULT_USER: process.env.DEFAULT_USER ?? 'u-demo',
+      },
+      bundling: { externalModules: ['aws-sdk', '@aws-sdk/*'] },
+    });
+    table.grantReadData(dashboardFn);
+
+    const dashboardApi = v1.addResource('dashboard');
+    const dashboardSummary = dashboardApi.addResource('summary');
+    dashboardSummary.addMethod('GET', new LambdaIntegration(dashboardFn));
+    dashboardSummary.addCorsPreflight({
+      allowOrigins: ['*'],
+      allowMethods: ['OPTIONS', 'GET'],
+      allowHeaders: ['Content-Type', 'Authorization'],
+    });
     const calendar = api.root.addResource('calendar');
     const meetings = calendar.addResource('meetings');
     meetings.addMethod('GET', new LambdaIntegration(calendarFn));
@@ -461,7 +507,7 @@ export class TeamHRStack extends Stack {
 
     
 
-    // D14: Billing (placeholder) – alarms on EstimatedCharges (USD)
+    // D14: Billing (placeholder) - alarms on EstimatedCharges (USD)
     const billingMetric = new Metric({
       namespace: 'AWS/Billing',
       metricName: 'EstimatedCharges',
@@ -677,8 +723,18 @@ export class TeamHRStack extends Stack {
     stateMachine.grantStartExecution(startFn);
 
     const briefing = api.root.addResource('briefing');
+    briefing.addCorsPreflight({
+      allowOrigins: ['*'],
+      allowMethods: ['OPTIONS', 'GET', 'POST'],
+      allowHeaders: ['Content-Type', 'Authorization'],
+    });
     const generate = briefing.addResource('generate');
     generate.addMethod('POST', new LambdaIntegration(startFn));
+    generate.addCorsPreflight({
+      allowOrigins: ['*'],
+      allowMethods: ['OPTIONS', 'POST'],
+      allowHeaders: ['Content-Type', 'Authorization'],
+    });
 
     // D14: Observability for Step Functions SLO (avg 60s, p95 120s, ceiling 2m)
     const sfnExecTimeP95 = new Metric({
@@ -780,27 +836,67 @@ export class TeamHRStack extends Stack {
 
     const list = briefing.addResource('list');
     list.addMethod('GET', new LambdaIntegration(briefingApiFn));
+    list.addCorsPreflight({
+      allowOrigins: ['*'],
+      allowMethods: ['OPTIONS', 'GET'],
+      allowHeaders: ['Content-Type', 'Authorization'],
+    });
     const get = briefing.addResource('get');
     get.addMethod('GET', new LambdaIntegration(briefingApiFn));
+    get.addCorsPreflight({
+      allowOrigins: ['*'],
+      allowMethods: ['OPTIONS', 'GET'],
+      allowHeaders: ['Content-Type', 'Authorization'],
+    });
     const note = briefing.addResource('note');
     note.addMethod('GET', new LambdaIntegration(briefingApiFn));
     note.addMethod('POST', new LambdaIntegration(briefingApiFn));
+    note.addCorsPreflight({
+      allowOrigins: ['*'],
+      allowMethods: ['OPTIONS', 'GET', 'POST'],
+      allowHeaders: ['Content-Type', 'Authorization'],
+    });
 
     const insights = api.root.addResource('insights');
+    insights.addCorsPreflight({
+      allowOrigins: ['*'],
+      allowMethods: ['OPTIONS', 'GET', 'POST'],
+      allowHeaders: ['Content-Type', 'Authorization'],
+    });
     const checklist = insights.addResource('checklist');
     checklist.addMethod('GET', new LambdaIntegration(briefingApiFn));
     checklist.addMethod('POST', new LambdaIntegration(briefingApiFn));
+    checklist.addCorsPreflight({
+      allowOrigins: ['*'],
+      allowMethods: ['OPTIONS', 'GET', 'POST'],
+      allowHeaders: ['Content-Type', 'Authorization'],
+    });
     // D12: Weekly trends endpoint
     const trends = insights.addResource('trends');
     trends.addMethod('GET', new LambdaIntegration(briefingApiFn));
+    trends.addCorsPreflight({
+      allowOrigins: ['*'],
+      allowMethods: ['OPTIONS', 'GET'],
+      allowHeaders: ['Content-Type', 'Authorization'],
+    });
 
     // D15: Feature configuration endpoint
     const configRes = api.root.addResource('config');
     configRes.addMethod('GET', new LambdaIntegration(briefingApiFn));
+    configRes.addCorsPreflight({
+      allowOrigins: ['*'],
+      allowMethods: ['OPTIONS', 'GET'],
+      allowHeaders: ['Content-Type', 'Authorization'],
+    });
 
     // Auth login redirect endpoint
     const auth = api.root.addResource('auth');
     auth.addResource('login').addMethod('GET', new LambdaIntegration(briefingApiFn));
+    auth.addCorsPreflight({
+      allowOrigins: ['*'],
+      allowMethods: ['OPTIONS', 'GET'],
+      allowHeaders: ['Content-Type', 'Authorization'],
+    });
 
     // D11: Roadmap routes
     const roadmap = api.root.addResource('roadmap');
@@ -809,6 +905,11 @@ export class TeamHRStack extends Stack {
     roadmap.addResource('save').addMethod('POST', new LambdaIntegration(briefingApiFn));
     roadmap.addResource('approve').addMethod('POST', new LambdaIntegration(briefingApiFn));
     roadmap.addResource('share').addMethod('POST', new LambdaIntegration(briefingApiFn));
+    roadmap.addCorsPreflight({
+      allowOrigins: ['*'],
+      allowMethods: ['OPTIONS', 'GET', 'POST'],
+      allowHeaders: ['Content-Type', 'Authorization'],
+    });
 
     new CfnOutput(this, 'BriefingGenerateEndpoint', {
       value: api.urlForPath('/briefing/generate'),
@@ -848,12 +949,16 @@ export class TeamHRStack extends Stack {
     const notifyPreview = notify.addResource('preview');
     notifyPreview.addMethod('GET', new LambdaIntegration(notifyFn));
 
-    // EventBridge schedule: every 5 minutes
-    const rule = new (require('aws-cdk-lib/aws-events').Rule)(this, 'NotifyRule', {
-      schedule: require('aws-cdk-lib/aws-events').Schedule.rate(Duration.minutes(5)),
-    });
-    const targets = require('aws-cdk-lib/aws-events-targets');
-    rule.addTarget(new targets.LambdaFunction(notifyFn));
+    const enableNotifySchedule = ((process.env.ENABLE_NOTIFY_SCHEDULE ?? 'false').toLowerCase() === 'true');
+
+    // EventBridge schedule: every 5 minutes (disabled by default to avoid costs)
+    if (enableNotifySchedule) {
+      const rule = new (require('aws-cdk-lib/aws-events').Rule)(this, 'NotifyRule', {
+        schedule: require('aws-cdk-lib/aws-events').Schedule.rate(Duration.minutes(5)),
+      });
+      const targets = require('aws-cdk-lib/aws-events-targets');
+      rule.addTarget(new targets.LambdaFunction(notifyFn));
+    }
 
     new CfnOutput(this, 'NotifyPreviewEndpoint', {
       value: api.urlForPath('/notify/preview'),
